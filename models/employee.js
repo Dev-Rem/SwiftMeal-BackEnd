@@ -15,7 +15,7 @@ const EmployeeSchema = new Schema({
     },
     phoneNumber: { type: String, required: true, trim: true },
     address: { type: Schema.Types.ObjectId, ref: 'Address'},
-    orders: [{ type: Schema.Types.ObjectId, ref: 'Address'}]
+    orders: [{ type: Schema.Types.ObjectId, ref: 'Order'}]
 
 },
 {
@@ -29,3 +29,6 @@ EmployeeSchema.plugin(mongooseIntlPhoneNumber, {
     internationalFormat: 'internationalFormat',
     countryCodeField: 'countryCode',
 });
+
+
+module.exports = mongoose.model('Employee', EmployeeSchema);
