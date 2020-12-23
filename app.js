@@ -8,7 +8,12 @@ const logger = require('morgan');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
-mongoose.connect('mongodb://127.0.0.1:27017/swiftmeal', { useUnifiedTopology: true, useNewUrlParser: true });
+mongoose.connect('mongodb://127.0.0.1:27017/swiftmeal', 
+  { useUnifiedTopology: true, useNewUrlParser: true }, 
+  (err, client) => {
+    if (err) return console.error(err)
+    console.log('Connected to Database')
+});
 const db = mongoose.connection;
 
 const app = express();
