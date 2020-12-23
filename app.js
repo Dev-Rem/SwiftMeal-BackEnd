@@ -14,7 +14,9 @@ mongoose.connect('mongodb://127.0.0.1:27017/swiftmeal',
     if (err) return console.error(err)
     console.log('Connected to Database')
 });
+
 const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 const app = express();
 app.listen(3000, function() {
