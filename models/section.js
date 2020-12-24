@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const SectionSchema = new Schema({
-    menu: { type: Schema.Types.ObjectId, ref: 'Menu'},
-    foods: [{ type: Schema.Types.ObjectId, ref: 'Food'}],
+    name: { type: String, required: true, trim: true },
+    menu_id: { type: Schema.Types.ObjectId, ref: 'Menu'},
 },
 {
   timestamps: true

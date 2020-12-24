@@ -1,10 +1,12 @@
 import mongoose from 'mongoose';
 import { isEmail } from 'validator';
+const mongooseIntlPhoneNumber = require('mongoose-intl-phone-number');
 const { Schema } = mongoose;
 
 const RestaurantSchema = new Schema({
-    address: { type: Schema.Types.ObjectId, ref: 'Address'},
+    address_id: { type: Schema.Types.ObjectId, ref: 'Address'},
     name: { type: String, required: true, trim: true },
+    phoneNumber: { type: String, required: true, trim: true },
     email: {
         type: String,
         trim: true,
@@ -13,11 +15,18 @@ const RestaurantSchema = new Schema({
         required: 'Email address is required',
         validate: [ isEmail, 'invalid email' ],
     },
-    menus: [{ type: Schema.Types.ObjectId, ref: 'Menu'}],
-
 },
 {
   timestamps: true
 });
+
+RestaurantSchema.plugin(mongooseIntlPhoneNumber, {
+    hook: 'validate',
+    phoneNumberField: 'phoneNumber',
+    nationalFormatField: 'nationalFormat',
+    internationalFormat: 'internationalFormat',
+    countryCodeField: 'countryCode',
+});
+
 
 module.exports = mongoose.model('Restaurant', RestaurantSchema );

@@ -6,7 +6,7 @@ const FoodSchema = new Schema({
     price: Number,
     picture: { data: Buffer,contentType: String, required: true },
     description: { type: String, required: true, trim: true },
-    section: { type: String, required: true, trim: true }
+    section_id: { type: String, required: true, trim: true },
 },
 {
   timestamps: true
