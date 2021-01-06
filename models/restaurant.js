@@ -6,7 +6,7 @@ const { Schema } = mongoose;
 const RestaurantSchema = new Schema({
     address_id: { type: Schema.Types.ObjectId, ref: 'Address'},
     name: { type: String, required: true, trim: true },
-    phoneNumber: { type: String, required: true, trim: true },
+    phoneNumber: { type: String, required: true, trim: true, unique: true },
     email: {
         type: String,
         trim: true,
