@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import { isEmail } from 'validator';
+const mongoose = require('mongoose');
+const validator = require('validator');
 const mongooseIntlPhoneNumber = require('mongoose-intl-phone-number');
 const { Schema } = mongoose;
 
@@ -13,7 +13,7 @@ const RestaurantSchema = new Schema({
         lowercase: true,
         unique: true,
         required: 'Email address is required',
-        validate: [ isEmail, 'invalid email' ],
+        validate: [ validator.isEmail, 'invalid email' ],
     },
 },
 {
