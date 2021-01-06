@@ -1,16 +1,22 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const Restaurant  = require('../models/restaurant.js')
+const Address = require('../models/address.js')
 var router = express.Router();
 
 /* POST create new restaurant. */
 router.post('/', async(req, res) => {
-
-  let restaurant = new Restaurant(req.body)
-  restaurant = await restaurant.save((error) => {
-    if(error) return handleError(error)
-  }); 
-  res.send(restaurant);
+  console.log(req.body.address)
+  var address = new Address(req.body.address)
+  address.save((error) => {
+    if (error) handleError(error);
+    Restaurant.create(
+    { address_id: address._id, name: req.body.name, phoneNumber: req.body.phoneNumber, email: req.body.email}, 
+    (error, restaurant) => {
+      if(error) return handleError(error)
+      res.send(restaurant);
+    });
+  })   
 });
 
 router.get('/', (req, res) => {
@@ -26,6 +32,7 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   Restaurant
     .findById(req.params.id)
+    .populate('address_id')
     .exec((error, restaurant) => {
       if (error) return handleError(error);
       res.send(restaurant)
