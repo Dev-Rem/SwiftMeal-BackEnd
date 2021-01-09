@@ -3,9 +3,8 @@ const Restaurant  = require('../models/restaurant.js')
 const Address = require('../models/address.js')
 var router = express.Router();
 
-/* POST create new restaurant. */
+/* POST create new restaurant document */
 router.post('/', async(req, res) => {
-  console.log(req.body.address)
   var address = new Address(req.body.address)
   address.save((error) => {
     if (error) handleError(error);
@@ -18,7 +17,7 @@ router.post('/', async(req, res) => {
   })   
 });
 
-/* GET get all restaurant instances */
+/* GET get all restaurant documents */
 router.get('/', (req, res) => {
   Restaurant
     .find({})
@@ -29,7 +28,7 @@ router.get('/', (req, res) => {
   
 });
 
-/* GET get a single restaurant instance with populated address field */
+/* GET get a single restaurant document with populated address field */
 router.get('/:id', (req, res) => {
   Restaurant
     .findById(req.params.id)
@@ -41,7 +40,7 @@ router.get('/:id', (req, res) => {
   
 });
 
-/* PUT edit a restaurant instance */
+/* PUT edit a single restaurant document */
 router.put('/:id', (req, res) => {
     Restaurant
     .findByIdAndUpdate(req.params.id, req.body, {new: true})
@@ -51,13 +50,24 @@ router.put('/:id', (req, res) => {
     });
 });
 
-/* DELETE delete a restaurant instance */
+/* DELETE delete a single restaurant document */
 router.delete('/:id', (req, res) => {
   Restaurant
     .findByIdAndRemove(req.params.id)
     .exec((error) => { 
       if (error) handleError(error)
       res.json({"status": "restaurant deleted"}) 
+    });
+});
+
+/* PUT edit restaurant address id */
+router.put('/:id', (req, res) => {
+  var restaurant = Restaurant.findById(req.params.id)
+  Address
+    .findByIdAndUpdate(restaurant.address_id, req.body)
+    .exec((error, address) => { 
+      if (error) handleError(error)
+      res.send(address) 
     });
 });
 
