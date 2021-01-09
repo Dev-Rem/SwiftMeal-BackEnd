@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const express = require('express');
 const Restaurant  = require('../models/restaurant.js')
 const Address = require('../models/address.js')
@@ -19,6 +18,7 @@ router.post('/', async(req, res) => {
   })   
 });
 
+/* GET get all restaurant instances */
 router.get('/', (req, res) => {
   Restaurant
     .find({})
@@ -29,6 +29,7 @@ router.get('/', (req, res) => {
   
 });
 
+/* GET get a single restaurant instance with populated address field */
 router.get('/:id', (req, res) => {
   Restaurant
     .findById(req.params.id)
@@ -40,6 +41,7 @@ router.get('/:id', (req, res) => {
   
 });
 
+/* PUT edit a restaurant instance */
 router.put('/:id', (req, res) => {
     Restaurant
     .findByIdAndUpdate(req.params.id, req.body, {new: true})
@@ -49,6 +51,7 @@ router.put('/:id', (req, res) => {
     });
 });
 
+/* DELETE delete a restaurant instance */
 router.delete('/:id', (req, res) => {
   Restaurant
     .findByIdAndRemove(req.params.id)
