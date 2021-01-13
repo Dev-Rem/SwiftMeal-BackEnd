@@ -7,11 +7,15 @@ var router = express.Router();
 router.post('/', async(req, res) => {
   var address = new Address(req.body.address)
   address.save((error) => {
-    if (error) handleError(error);
-    Restaurant.create(
-    { address_id: address._id, name: req.body.name, phoneNumber: req.body.phoneNumber, email: req.body.email}, 
-    (error, restaurant) => {
-      if(error) return handleError(error)
+    if (error) return handleError(error);
+    Restaurant
+    .create({ 
+      address_id: address._id, 
+      name: req.body.name, 
+      phoneNumber: req.body.phoneNumber, 
+      email: req.body.email
+    }, 
+    (restaurant) => {
       res.send(restaurant);
     });
   })   
@@ -37,15 +41,14 @@ router.get('/:id', (req, res) => {
       if (error) return handleError(error);
       res.send(restaurant)
     });
-  
 });
 
 /* PUT edit a single restaurant document */
 router.put('/:id', (req, res) => {
     Restaurant
-    .findByIdAndUpdate(req.params.id, req.body, {new: true})
+    .findByIdAndUpdate(req.params.id, req.body)
     .exec((error, restaurant) => { 
-      if (error) handleError(error)
+      if (error) return handleError(error)
       res.send(restaurant) 
     });
 });
@@ -55,19 +58,22 @@ router.delete('/:id', (req, res) => {
   Restaurant
     .findByIdAndRemove(req.params.id)
     .exec((error) => { 
-      if (error) handleError(error)
+      if (error) return handleError(error)
       res.json({"status": "restaurant deleted"}) 
     });
 });
 
-/* PUT edit restaurant address id */
-router.put('/:id', (req, res) => {
-  var restaurant = Restaurant.findById(req.params.id)
+/* PUT edit restaurant address */
+router.put('/:rest_id/:add_id', (req, res) => {
   Address
-    .findByIdAndUpdate(restaurant.address_id, req.body)
-    .exec((error, address) => { 
-      if (error) handleError(error)
-      res.send(address) 
+    .findByIdAndUpdate(req.params.add_id, req.body, (error, address) => { 
+      if (error) return handleError(error)
+       Restaurant.findByIdAndUpdate(req.params.rest_id, { address_id: address._id}, (error) => {
+        if (error){
+          next(error);
+        }
+      });
+      res.send(address);
     });
 });
 
