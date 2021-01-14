@@ -10,6 +10,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const restaurantsRouter = require('./routes/restaurants');
 const addressRouter = require('./routes/addresses')
+const accountRouter = require('./routes/accounts');
 
 mongoose.connect('mongodb://mongodb:27017/swiftmeal', 
   { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true }, 
@@ -42,6 +43,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/restuarants', restaurantsRouter);
 app.use('/addresses', addressRouter);
+app.use('/accounts', accountRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

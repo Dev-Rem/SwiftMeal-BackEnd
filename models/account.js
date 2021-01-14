@@ -1,6 +1,7 @@
-import mongoose from 'mongoose';
-var mongooseIntlPhoneNumber = require('mongoose-intl-phone-number');
-var bycrypt = require('bcrypt'), SALT_WORK_FACTOR = 10;
+const mongoose = require('mongoose');
+const mongooseIntlPhoneNumber = require('mongoose-intl-phone-number');
+const validator = require('validator');
+const bycrypt = require('bcrypt'), SALT_WORK_FACTOR = 10;
 const { Schema } = mongoose;
 
 const AccountSchema = new Schema({
@@ -12,11 +13,11 @@ const AccountSchema = new Schema({
         lowercase: true,
         unique: true,
         required: 'Email address is required',
-        validate: [ isEmail, 'invalid email' ],
+        validate: [ validator.isEmail, 'invalid email' ],
     },
-    phoneNumber: { type: String, required: true, trim: true },
+    phoneNumber: { type: String, required: true, trim: true, unique:true },
     address_id: { type: Schema.Types.ObjectId, ref: 'Address'},
-    passowrd: { type: String, required: true, trim: true, minlength: 8 }
+    password: { type: String, required: true, trim: true, minlength: 8 }
 },
 {
   timestamps: true
@@ -30,7 +31,7 @@ AccountSchema.plugin(mongooseIntlPhoneNumber, {
     countryCodeField: 'countryCode',
 });
 
-AccountSchema.pre('save', (next) => {
+AccountSchema.pre('save', function (next){
     var user = this;
 
     if(!user.isModified('password')) return next();
@@ -51,4 +52,4 @@ AccountSchema.methods.comparePassword = (candidatePassword, callback) => {
         callback(undefined, isMatch);
     });
 }
-module.exports = mongoose.model('Employee', EmployeeSchema);
+module.exports = mongoose.model('Account', AccountSchema);
