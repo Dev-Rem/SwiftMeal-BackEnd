@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+require(‘dotenv’).config();
+const jwt = require(‘jsonwebtoken’);
 const mongooseIntlPhoneNumber = require('mongoose-intl-phone-number');
 const validator = require('validator');
 const bycrypt = require('bcrypt'), SALT_WORK_FACTOR = 10;
@@ -17,7 +19,8 @@ const AccountSchema = new Schema({
     },
     phoneNumber: { type: String, required: true, trim: true, unique:true },
     address_id: { type: Schema.Types.ObjectId, ref: 'Address'},
-    password: { type: String, required: true, trim: true, minlength: 8 }
+    password: { type: String, required: true, trim: true, minlength: 8 },
+    token: { type: String }
 },
 {
   timestamps: true
@@ -46,10 +49,32 @@ AccountSchema.pre('save', function (next){
     });
 });
 
-AccountSchema.methods.comparePassword = (candidatePassword, callback) => {
+AccountSchema.methods.comparePassword = (candidatePassword, callBack) => {
     bycrypt.compare(candidatePassword, this.password, (error, isMatch) => {
-        if(error) return callback(error);
+        if(error) return callBack(error);
         callback(undefined, isMatch);
+    });
+}
+
+AccountSchema.methods.generateToken = function (callBack){
+    var user = this;
+    var token = jwt.sign(user._id.toHexString(), process.env.SECRET);
+    user.token = token;
+    user.save((error, user) => {
+        if (error) return callBack(error);
+        callBack(undefined, user);
+    });
+};
+
+AccountSchema.statics.findByToken = function (token, callBack) {
+    var user = this;
+    jwt.verify(token, process.env.SECRET, (error, decode) => {
+        if (error) callBack(error);
+        decode = user._id;
+        user.findOne({"_id": decode, "token": token }, (error, user) => {
+            if (error) callBack(error);
+            callBack(undefined, user);
+        });
     });
 }
 module.exports = mongoose.model('Account', AccountSchema);

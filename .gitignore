@@ -104,6 +104,6 @@ dist
 .tern-port
 package-lock.json
 package.json
-Dockerfile
 .dockerignore
 docker-compose.yaml
+.env

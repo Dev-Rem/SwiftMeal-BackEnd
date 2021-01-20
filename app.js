@@ -5,6 +5,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
+require('dotenv').config();
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -12,9 +13,9 @@ const restaurantsRouter = require('./routes/restaurants');
 const addressRouter = require('./routes/addresses')
 const accountRouter = require('./routes/accounts');
 
-mongoose.connect('mongodb://mongodb:27017/swiftmeal', 
+mongoose.connect(process.env.DATABASE, 
   { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true }, 
-  (err, client) => {
+  (err) => {
     if (err) return console.error(err)
     console.log('Connected to Database')
 });
@@ -23,8 +24,8 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 const app = express();
-app.listen(3000, () => {
-  console.log('listening on "localhost:3000"')
+app.listen(process.env.PORT, () => {
+  console.log('listening on localhost: ${process.env.PORT}')
 })
 
 
