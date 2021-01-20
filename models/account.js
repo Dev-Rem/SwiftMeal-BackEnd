@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-require(‘dotenv’).config();
-const jwt = require(‘jsonwebtoken’);
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const mongooseIntlPhoneNumber = require('mongoose-intl-phone-number');
 const validator = require('validator');
 const bycrypt = require('bcrypt'), SALT_WORK_FACTOR = 10;

@@ -18,12 +18,9 @@ const auth = (req, res, next) => {
 }
 
 // Create a new user account
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
     Address.create(req.body.address, (error, address) => {
-        if(error) {
-            console.log(error);
-            return res.status(500).send();
-        }
+        if (error) throw error;
         Account.create({
            firstName: req.body.firstName,
            lastName: req.body.lastName,
@@ -32,12 +29,12 @@ router.post('/register', (req, res) => {
            address_id:  address._id,
            password: req.body.password
         }, 
-        (error, account) => {
-            if(error) {
-                console.log(error);
-                return res.status(500).send();
-            }
-            res.send(account);
+        (error) => {
+            if (error) throw error;
+            res.status(200).json({
+                success: true,
+                message: 'Successfully Signed Up',
+            });
         });
     });
 });
@@ -59,17 +56,35 @@ router.get('/:id', (req, res) => {
 
 // login a user
 router.post('/login', (req, res) => {
-    Account.findOne(req.body, (error, account) => {
-        if(error) {
-            console.log(error);
-            return res.status(500).send();
-        }
+    Account.findOne({'email': req.body.email}, (error, account) => {
+        if(error) throw error;
         if(!user) {
-            return res.status(400).send();
+            return res.status(404).json({ success: false, message: 'User email not found!' });
+        }else {
+            account.comparePassword(req.body.password, (error, isMatch) => {
+                if (!isMatch) {
+                    return res.status(400).json({ success: false, message: 'Wrong Password!' });
+                }else{
+                    account.generateToken((error, account) => {
+                        if (error) {
+                            return res.status(400).send(); 
+                        }else{
+                            res.cookie('authToken', account.token).status(200).json({
+                                success: true,
+                                message: 'Successfully Logged In',
+                                id: account._id,
+                                firstName: account.firstName,
+                                lastName: account.lastName,
+                                email: account.email,
+                                token: account.token
+                            });
+                        }
+                    });
+                }
+            });
         }
-        req.session.user = account;
-        return res.status(200).send();
     });
 });
+
 
 module.exports = router;
