@@ -1,9 +1,10 @@
 const express = require('express');
 const Address = require('../models/address.js')
-var router = express.Router();
+const router = express.Router();
+const { auth } = require('../routes/auth')
 
 /* POST create new address */
-router.post('/', (req, res) => {
+router.post('/', auth, (req, res) => {
     Address.create(req.body, (error, address) => {
         if (error) return handleError(error);
         res.send(address)
@@ -19,7 +20,7 @@ router.get('/', (req, res) => {
 });
 
 /* GET get a single address document */
-router.get('/:id', (req, res) => {
+router.get('/:id', auth, (req, res) => {
     Address.findById(req.params.id, (error, address) => {
         if (error) return handleError(error);
         res.send(address)
@@ -27,7 +28,7 @@ router.get('/:id', (req, res) => {
 });
 
 /* PUT edit a single address document */
-router.put('/:id', (req, res) => {
+router.put('/:id', auth, (req, res) => {
     Address
     .findByIdAndUpdate(req.params.id, req.body)
     .exec((error, address) => { 
@@ -37,7 +38,7 @@ router.put('/:id', (req, res) => {
 });
 
 /* DELETE delete an address document */
-router.delete('/:id', (req, res) => {
+router.delete('/:id', auth, (req, res) => {
     Address.findByIdAndRemove(req.params.id, (error, address) => {
         if (error) return handleError(error);
         res.send({status: "address deleted", address_id: address._id})

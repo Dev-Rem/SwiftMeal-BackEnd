@@ -2,22 +2,9 @@ const express = require('express');
 const Account = require('../models/account.js');
 const Address = require('../models/address.js');
 const router = express.Router();
+const { auth } = require('../routes/auth');
 
-
-// Create user auth
-const auth = (req, res, next) => {
-    let token = req.cookies.authToken;
-
-    Account.findByToken(token, (error, user) => {
-        if (error) throw error;
-        if(!user) res.json({isAuth: false, error: true});
-        req.token= token;
-        req.user = user;
-        next();
-    });
-}
-
-// Create a new user account
+/* Create a new user account */
 router.post('/register', async (req, res) => {
     Address.create(req.body.address, (error, address) => {
         if (error) throw error;
@@ -29,32 +16,21 @@ router.post('/register', async (req, res) => {
            address_id:  address._id,
            password: req.body.password
         }, 
-        (error) => {
+        (error, account) => {
             if (error) throw error;
             res.status(200).json({
                 success: true,
                 message: 'Successfully Signed Up',
+                firstName: account.firstName,
+                lastName: account.lastName,
+                email: account.email,
+                phoneNumber: account.phoneNumber
             });
         });
     });
 });
 
-// get a single user account
-router.get('/:id', (req, res) => {
-    Account.findById(req.params.id, (error, account) => {
-        if(error){
-            console.log(error);
-            return res.status(500).send();
-        }
-        if(!account){
-            return res.status(404).send();
-        }
-        res.send(account);
-    }).populate('address_id');
-});
-
-
-// login a user
+/* Login a user */
 router.post('/login', (req, res) => {
     Account.findOne({'email': req.body.email}, (error, account) => {
         if(error) throw error;
@@ -76,6 +52,7 @@ router.post('/login', (req, res) => {
                                 firstName: account.firstName,
                                 lastName: account.lastName,
                                 email: account.email,
+                                phoneNumber: account.phoneNumber,
                                 token: account.token
                             });
                         }
@@ -86,5 +63,24 @@ router.post('/login', (req, res) => {
     });
 });
 
+/* Logout a user */
+router.post('/logout', auth, (req, res) => {
+    Account.findByIdAndDelete({ _id: req.user_id }, { token: ''}, (error) => {
+        if (error) return res.json({ success: false, error })
+        return res.status(200).send({ success: true, message: 'Successfully Logged Out' });
+    });
+});
+
+/* Get a single user account */
+router.get('/account', auth, (req, res) => {
+    return res.status(200).json({
+        isAuthenticated: true,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+        email: req.user.email,
+        phoneNumber: req.user.phoneNumber,
+        address_id: req.user.address_id
+    });
+});
 
 module.exports = router;
