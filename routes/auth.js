@@ -14,7 +14,7 @@ router.post("/register", async (req, res) => {
   const userExist = await Account.findOne({ email: req.body.email });
   if (userExist) return res.status(400).send("Email already exists");
 
-  // create new user account
+  // create new user account and return account 
   const account = new Account(req.body);
   await account.save((error, account) => {
     if (error) res.status(400).send(error);
@@ -33,7 +33,8 @@ router.post("/login", async (req, res) => {
   if (!account) return res.status(404).send("User email not found!");
 
   // compare request password with hashed database password
-  await account.comparePassword(req.body.password, (isMatch) => {
+  await account.comparePassword(req.body.password, (error, isMatch) => {
+    if (error) return res.status(400).send(error);
     if (!isMatch) return res.status(400).send("Wrong password");
   });
 
@@ -47,20 +48,27 @@ router.post("/login", async (req, res) => {
 });
 
 /* Logout a user */
-router.post("/logout", auth, (req, res) => {
-  Account.findByIdAndDelete({ _id: req.user_id }, { token: "" }, (error) => {
-    if (error) return res.json({ success: false, error });
-    return res
-      .status(200)
-      .send({ success: true, message: "Successfully Logged Out" });
-  });
+router.post("/logout", auth, async (req, res) => {
+  // get user token from request headers
+  const token = req.header("auth-token");
+
+  // find user account and delete token
+  const account = await Account.findOnd({ token: token });
+  if (!account) return res.status(400).send("Invalid token or user not found");
+  account.token = undefined;
+  account.save();
+  res.status(200).send("Logged out");
 });
 
 /* Get a single user account */
 router.get("/user", auth, async (req, res) => {
-  const account = await Account.findOne({ _id: req.user });
-  if (!account) return res.status(400).send("Account not found");
-  return res.status(200).send(account);
+  // get user token from request headers
+  const token = req.header("auth-token");
+
+  // find account using token and return user infomation
+  const account = await Account.findOne({ token: token });
+  if (!account) return res.status(400).send("Invalid token or user not found");
+  res.status(200).json({ _id: req.user._id, email: req.user.email });
 });
 
 module.exports = router;

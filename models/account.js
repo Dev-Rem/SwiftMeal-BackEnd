@@ -21,7 +21,7 @@ const AccountSchema = new Schema(
     },
     phoneNumber: { type: String, required: true, trim: true, unique: true },
     address_id: { type: Schema.Types.ObjectId, ref: "Address" },
-    password: { type: String, required: true, trim: true, minlength: 8 },
+    password: { type: String, required: true, trim: true },
     token: { type: String },
   },
   {
@@ -61,7 +61,10 @@ AccountSchema.methods.comparePassword = function (candidatePassword, callBack) {
 
 AccountSchema.methods.generateToken = function (callBack) {
   var user = this;
-  var token = jwt.sign(user._id, process.env.SECRET);
+  var token = jwt.sign(
+    { _id: user._id, email: user.email },
+    process.env.SECRET
+  );
   user.token = token;
   user.save((error, user) => {
     if (error) return callBack(error);
