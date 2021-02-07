@@ -14,7 +14,7 @@ router.post("/register", async (req, res) => {
   const userExist = await Account.findOne({ email: req.body.email });
   if (userExist) return res.status(400).send("Email already exists");
 
-  // create new user account and return account 
+  // create new user account and return account
   const account = new Account(req.body);
   await account.save((error, account) => {
     if (error) res.status(400).send(error);
@@ -68,7 +68,38 @@ router.get("/user", auth, async (req, res) => {
   // find account using token and return user infomation
   const account = await Account.findOne({ token: token });
   if (!account) return res.status(400).send("Invalid token or user not found");
-  res.status(200).json({ _id: req.user._id, email: req.user.email });
+
+  // return user account information
+  res.status(200).json({
+    id: account._id,
+    firstName: account.firstName,
+    lastName: account.lastName,
+    phoneNumber: account.phoneNumber,
+    email: account.email,
+    address_id: account.address_id,
+  });
+});
+
+/* POST create new user address document */
+router.post("/address/create", auth, async (req, res) => {
+  // validate address info
+  const { error } = addressValidation(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  // create new user address
+  const address = new Address(req.body);
+  await address.save((error, address) => {
+    if (error) return res.status(400).send("Unable to save address");
+
+    // find authenticated user document
+    const account = Account.findByIdAndUpdate(
+      { _id: req.user._id },
+      { address_id: address._id }
+    );
+    if (!account) return res.status(400).send("Could not update account");
+    account.save();
+    res.status(200).send(address);
+  });
 });
 
 module.exports = router;

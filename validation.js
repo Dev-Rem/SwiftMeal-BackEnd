@@ -1,5 +1,4 @@
 const Joi = require("joi");
-const { model } = require("./models/address");
 
 /* User registration validation */
 exports.registerValidation = (data) => {
@@ -32,5 +31,15 @@ exports.addressValidation = (data) => {
     postalCode: Joi.number().required(),
     country: Joi.string().max(150).required(),
   });
+  return schema.validate(data);
+};
+
+exports.restaurantValidation = (data) => {
+  const schema = Joi.object({
+    name: Joi.string().required().min(3).max(200),
+    phoneNumber: Joi.string().required().min(6).max(30),
+    email: Joi.string().min(6).max(200).required().email(),
+  });
+
   return schema.validate(data);
 };
