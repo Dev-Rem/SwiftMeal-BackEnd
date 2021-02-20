@@ -71,7 +71,12 @@ router.post("/:id/address/create", async (req, res) => {
 
   // find authenticated user document
   Restaurant.findById({ _id: req.params.id }, (error, restaurant) => {
-    if (!restaurant) return res.status(400).send("Could not update restaurant");
+    if (error)
+      return res.status(400).json({ error: "Could not Update restaurant" });
+    if (!restaurant)
+      return res
+        .status(400)
+        .json({ error: "Restaurant does not exist in database" });
     restaurant.address_id = saved_address._id;
     restaurant.save();
   });

@@ -19,6 +19,11 @@ const AccountSchema = new Schema(
       required: "Email address is required",
       validate: [validator.isEmail, "invalid email"],
     },
+    role: {
+      type: String,
+      default: "basic",
+      enum: ["basic", "supervisor", "admin"],
+    },
     phoneNumber: { type: String, required: true, trim: true, unique: true },
     address_id: { type: Schema.Types.ObjectId, ref: "Address" },
     password: { type: String, required: true, trim: true },
@@ -63,7 +68,8 @@ AccountSchema.methods.generateToken = function (callBack) {
   var user = this;
   var token = jwt.sign(
     { _id: user._id, email: user.email },
-    process.env.SECRET
+    process.env.SECRET,
+    { expiresIn: "1d" }
   );
   user.token = token;
   user.save((error, user) => {
