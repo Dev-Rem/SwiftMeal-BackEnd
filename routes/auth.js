@@ -1,7 +1,7 @@
 const express = require("express");
 const Account = require("../models/account.js");
 const router = express.Router();
-const auth = require("./authController");
+const {auth} = require("./authController");
 const { registerValidation, loginValidation } = require("../validation");
 
 /* Create a new user account */

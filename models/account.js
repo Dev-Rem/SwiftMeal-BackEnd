@@ -21,8 +21,8 @@ const AccountSchema = new Schema(
     },
     role: {
       type: String,
-      default: "basic",
-      enum: ["basic", "supervisor", "admin"],
+      default: "user",
+      enum: ["user", "admin"],
     },
     phoneNumber: { type: String, required: true, trim: true, unique: true },
     address_id: { type: Schema.Types.ObjectId, ref: "Address" },
