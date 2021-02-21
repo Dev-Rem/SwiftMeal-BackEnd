@@ -11,6 +11,10 @@ const AccountSchema = new Schema(
   {
     firstName: { type: String, required: true, trim: true },
     lastName: { type: String, required: true, trim: true },
+    phoneNumber: { type: String, required: true, trim: true, unique: true },
+    address_id: { type: Schema.Types.ObjectId, ref: "Address" },
+    password: { type: String, required: true, trim: true },
+    token: { type: String },
     email: {
       type: String,
       trim: true,
@@ -24,10 +28,6 @@ const AccountSchema = new Schema(
       default: "user",
       enum: ["user", "admin"],
     },
-    phoneNumber: { type: String, required: true, trim: true, unique: true },
-    address_id: { type: Schema.Types.ObjectId, ref: "Address" },
-    password: { type: String, required: true, trim: true },
-    token: { type: String },
   },
   {
     timestamps: true,
@@ -67,9 +67,9 @@ AccountSchema.methods.comparePassword = function (candidatePassword, callBack) {
 AccountSchema.methods.generateToken = function (callBack) {
   var user = this;
   var token = jwt.sign(
-    { _id: user._id, email: user.email },
+    { _id: user._id, email: user.email, role: user.role },
     process.env.SECRET,
-    { expiresIn: "1d" }
+    // { expiresIn: "1d" }
   );
   user.token = token;
   user.save((error, user) => {

@@ -8,6 +8,7 @@ exports.registerValidation = (data) => {
     email: Joi.string().min(6).max(200).required().email(),
     phoneNumber: Joi.string().min(6).max(30).required(),
     password: Joi.string().min(6).max(30).required(),
+    role: Joi.string().required(),
   });
 
   return schema.validate(data);

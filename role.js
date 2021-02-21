@@ -1,7 +1,8 @@
 const AccessControl = require("accesscontrol");
+
 const ac = new AccessControl();
 
-exports.roles = () => {
+exports.roles = (function () {
   ac.grant("user")
     .readOwn("profile")
     .updateOwn("profile")
@@ -17,5 +18,6 @@ exports.roles = () => {
     .readAny("restaurant")
     .updateAny("restaurant")
     .deleteAny("restaurant");
+
   return ac;
-};
+})();

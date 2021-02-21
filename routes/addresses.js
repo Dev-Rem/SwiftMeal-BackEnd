@@ -3,7 +3,7 @@ const Address = require("../models/address.js");
 const Account = require("../models/account.js");
 const Restaurant = require("../models/restaurant");
 const router = express.Router();
-const auth = require("./authController");
+const { auth } = require("./authController");
 const { addressValidation } = require("../validation");
 
 /* GET get all address documents */

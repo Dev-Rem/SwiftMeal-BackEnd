@@ -1,7 +1,8 @@
 const express = require("express");
 const Account = require("../models/account.js");
 const router = express.Router();
-const {auth} = require("./authController");
+const { auth } = require("./authController");
+const { roles } = require("../role");
 const { registerValidation, loginValidation } = require("../validation");
 
 /* Create a new user account */
@@ -16,7 +17,7 @@ router.post("/register", async (req, res) => {
 
   // create new user account and return account
   const account = new Account(req.body);
-  await account.save((error, account) => {
+  account.save((error, account) => {
     if (error) res.status(400).send(error);
     res.send(account);
   });
@@ -52,12 +53,19 @@ router.post("/logout", auth, async (req, res) => {
   // get user token from request headers
   const token = req.header("auth-token");
 
+  //  check user permission to login
+  const permission = await roles.can(req.user.role).updateOwn("profile");
+  if (!permission.granted)
+    return res.status(400).json({ error: "Permission denied" });
+
   // find user account and delete token
-  const account = await Account.findOnd({ token: token });
-  if (!account) return res.status(400).send("Invalid token or user not found");
-  account.token = undefined;
-  account.save();
-  res.status(200).send("Logged out");
+  Account.findOne({ token: token }, (account) => {
+    if (!account)
+      return res.status(400).json({ error: "Invalid token or user not found" });
+    account.token = undefined;
+    account.save();
+    res.status(200).send("Logged out");
+  });
 });
 
 /* Get a single user account */
@@ -67,7 +75,8 @@ router.get("/user", auth, async (req, res) => {
 
   // find account using token and return user infomation
   const account = await Account.findOne({ token: token });
-  if (!account) return res.status(400).send("Invalid token or user not found");
+  if (!account)
+    return res.status(400).json({ error: "Invalid token or user not found" });
 
   // return user account information
   res.status(200).json({

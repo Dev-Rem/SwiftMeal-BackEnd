@@ -7,7 +7,6 @@ const bodyParser = require("body-parser");
 const logger = require("morgan");
 require("dotenv").config();
 
-const usersRouter = require("./routes/users");
 const restaurantsRouter = require("./routes/restaurants");
 const addressRouter = require("./routes/addresses");
 const accountRouter = require("./routes/auth");
@@ -40,7 +39,6 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/api/users", usersRouter);
 app.use("/api/restuarants", restaurantsRouter);
 app.use("/api/addresses", addressRouter);
 app.use("/api/auth/", accountRouter);
