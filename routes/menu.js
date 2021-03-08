@@ -7,4 +7,5 @@ const router = express.Router();
 /* Create new restaurant menu */
 router.post("/create", auth, async (req, res) => {
   // Check user permission
+    
 });

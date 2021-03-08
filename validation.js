@@ -8,7 +8,7 @@ exports.registerValidation = (data) => {
     email: Joi.string().min(6).max(200).required().email(),
     phoneNumber: Joi.string().min(6).max(30).required(),
     password: Joi.string().min(6).max(30).required(),
-    role: Joi.string().required(),
+    role: Joi.string().required().max(6).min(4),
   });
 
   return schema.validate(data);
@@ -40,6 +40,15 @@ exports.restaurantValidation = (data) => {
     name: Joi.string().required().min(3).max(200),
     phoneNumber: Joi.string().required().min(6).max(30),
     email: Joi.string().min(6).max(200).required().email(),
+  });
+
+  return schema.validate(data);
+};
+
+exports.menuValidation = (data) => {
+  const schema = Joi.object({
+    restaurantId: Joi.string().required(),
+    name: Joi.string().required(),
   });
 
   return schema.validate(data);
