@@ -6,6 +6,13 @@ const router = express.Router();
 
 /* POST create new restaurant document */
 router.post("/", async (req, res) => {
+  // Check permission to create restaurant document
+  const permission = await roles.can(req.user.role).createAny("restaurant");
+  if (!permission.granted)
+    return res
+      .status(400)
+      .json({ error: "Permission denied, you can not access this resource" });
+
   // validate restaurant create data
   const { error } = restaurantValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -19,7 +26,14 @@ router.post("/", async (req, res) => {
 });
 
 /* GET get all restaurant documents */
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  // Check permission to read all restaurant document
+  const permission = await roles.can(req.user.role).readAny("restaurant");
+  if (!permission.granted)
+    return res
+      .status(400)
+      .json({ error: "Permission denied, you can not access this resource" });
+
   Restaurant.find({}).exec((error, restaurant) => {
     if (error) return handleError(error);
     res.send(restaurant);
@@ -28,13 +42,31 @@ router.get("/", (req, res) => {
 
 /* GET get a single restaurant document with populated address field */
 router.get("/:id", async (req, res) => {
+  // Check permission to read a restaurant document
+  const permission = await roles.can(req.user.role).readAny("restaurant");
+  if (!permission.granted)
+    return res
+      .status(400)
+      .json({ error: "Permission denied, you can not access this resource" });
+
   const restaurant = await Restaurant.findById(req.params.id);
   if (!restaurant) return res.status(400).send("Bad request");
   res.send(restaurant);
 });
 
 /* PUT edit a single restaurant document */
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
+  // Check permission to create restaurant document
+  const permission = await roles.can(req.user.role).updateAny("restaurant");
+  if (!permission.granted)
+    return res
+      .status(400)
+      .json({ error: "Permission denied, you can not access this resource" });
+
+  // validate restaurant create data
+  const { error } = restaurantValidation(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
   Restaurant.findByIdAndUpdate(req.params.id, req.body).exec(
     (error, restaurant) => {
       if (error) return handleError(error);
@@ -44,7 +76,14 @@ router.put("/:id", (req, res) => {
 });
 
 /* DELETE delete a single restaurant document */
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
+  // Check permission to create restaurant document
+  const permission = await roles.can(req.user.role).deleteAny("restaurant");
+  if (!permission.granted)
+    return res
+      .status(400)
+      .json({ error: "Permission denied, you can not access this resource" });
+
   // find and delete restaurant document
   Restaurant.findByIdAndRemove(req.params.id, async (error, restaurant) => {
     if (error) return handleError(error);

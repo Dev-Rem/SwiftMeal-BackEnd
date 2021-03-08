@@ -8,14 +8,14 @@ exports.roles = (function () {
     .updateOwn("profile")
     .createOwn("address")
     .updateOwn("address")
-    .deleteOwn("address");
+    .deleteOwn("address")
+    .readAny("restaurant");
 
   ac.grant("admin")
     .extend("user")
     .updateAny("profile")
     .deleteAny("profile")
     .createAny("restaurant")
-    .readAny("restaurant")
     .updateAny("restaurant")
     .deleteAny("restaurant");
 
