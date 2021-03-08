@@ -3,6 +3,7 @@ const Address = require("../models/address.js");
 const router = express.Router();
 const { auth } = require("./authController");
 const { roles } = require("../role");
+const { addressValidation } = require('../validation')
 
 /* GET get all address documents */
 router.get("/", auth, async (req, res) => {
@@ -26,6 +27,9 @@ router.post("/create", auth, (req, res) => {
   if (!permission.granted)
     return res.status(400).json({ error: "Permission denied you can not access this resource" });
   
+  // Validate address data 
+  const { error } = addressValidation(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
   // Create new address document
   Address.create(req.body, async (error, address) => {
     if (error) return res.status(400).json({ error: error });
@@ -56,6 +60,10 @@ router.put("/:id", auth, (req, res) => {
   const permission = await roles.can(req.user.role).updateOwn("address");
   if (!permission.granted)
     return res.status(400).json({ error: "Permission denied you can not access this resource" });
+  
+  // Validate address data 
+  const { error } = addressValidation(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
   
   // Find and update address by id
   Address.findByIdAndUpdate(
