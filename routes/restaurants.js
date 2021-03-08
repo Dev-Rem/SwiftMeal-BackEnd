@@ -1,11 +1,12 @@
 const express = require("express");
 const Restaurant = require("../models/restaurant.js");
 const Address = require("../models/address.js");
+const { auth } = require("./authController");
 const { restaurantValidation, addressValidation } = require("../validation");
 const router = express.Router();
 
 /* POST create new restaurant document */
-router.post("/", async (req, res) => {
+router.post("/create", auth, async (req, res) => {
   // Check permission to create restaurant document
   const permission = await roles.can(req.user.role).createAny("restaurant");
   if (!permission.granted)
@@ -55,7 +56,7 @@ router.get("/:id", async (req, res) => {
 });
 
 /* PUT edit a single restaurant document */
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   // Check permission to create restaurant document
   const permission = await roles.can(req.user.role).updateAny("restaurant");
   if (!permission.granted)
@@ -76,7 +77,7 @@ router.put("/:id", async (req, res) => {
 });
 
 /* DELETE delete a single restaurant document */
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   // Check permission to create restaurant document
   const permission = await roles.can(req.user.role).deleteAny("restaurant");
   if (!permission.granted)

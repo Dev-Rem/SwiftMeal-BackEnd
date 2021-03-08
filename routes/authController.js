@@ -15,19 +15,3 @@ exports.auth = function (req, res, next) {
     if (error) return res.status(400).send("Invalid token");
   }
 };
-
-exports.grantAccess = function (action, resource) {
-  return async (req, res, next) => {
-    try {
-      const permission = roles.can(req.user.role)[action](resource);
-      if (!permission.granted) {
-        return res.status(401).json({
-          error: "You don't have enough permission to perform this action",
-        });
-      }
-      next();
-    } catch (error) {
-      next(error);
-    }
-  };
-};
