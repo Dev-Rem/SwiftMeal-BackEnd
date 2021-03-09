@@ -1,3 +1,4 @@
+require("dotenv").config();
 const createError = require("http-errors");
 const express = require("express");
 const mongoose = require("mongoose");
@@ -5,13 +6,20 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
-require("dotenv").config();
 
 const restaurantsRouter = require("./routes/restaurants");
 const addressRouter = require("./routes/addresses");
 const accountRouter = require("./routes/auth");
 const sectionRouter = require("./routes/sections");
 const menuRouter = require("./routes/menus");
+
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
+
+const app = express();
+app.listen(process.env.PORT, () => {
+  console.log("listening on localhost: ${process.env.PORT}");
+});
 
 mongoose.connect(
   process.env.DATABASE,
@@ -21,14 +29,6 @@ mongoose.connect(
     console.log("Connected to Database");
   }
 );
-
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
-
-const app = express();
-app.listen(process.env.PORT, () => {
-  console.log("listening on localhost: ${process.env.PORT}");
-});
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
