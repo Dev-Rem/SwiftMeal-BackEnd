@@ -10,7 +10,8 @@ exports.roles = (function () {
     .updateOwn("address")
     .deleteOwn("address")
     .readAny("restaurant")
-    .readAny("menu");
+    .readAny("menu")
+    .readAny("section");
 
   ac.grant("admin")
     .extend("user")
@@ -21,7 +22,10 @@ exports.roles = (function () {
     .deleteAny("restaurant")
     .createAny("menu")
     .updateAny("menu")
-    .deleteAny("menu");
+    .deleteAny("menu")
+    .createAny("section")
+    .updateAny("section")
+    .deleteAny("section");
 
   return ac;
 })();

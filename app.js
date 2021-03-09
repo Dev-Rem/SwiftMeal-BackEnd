@@ -10,6 +10,7 @@ require("dotenv").config();
 const restaurantsRouter = require("./routes/restaurants");
 const addressRouter = require("./routes/addresses");
 const accountRouter = require("./routes/auth");
+const sectionRouter = require("./routes/sections");
 const menuRouter = require("./routes/menus");
 
 mongoose.connect(
@@ -43,6 +44,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/restuarants", restaurantsRouter);
 app.use("/api/addresses", addressRouter);
 app.use("/api/auth/", accountRouter);
+app.use("api/sections", sectionRouter);
 app.use("/api/menus", menuRouter);
 
 // catch 404 and forward to error handler
