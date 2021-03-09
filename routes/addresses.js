@@ -7,28 +7,23 @@ const { addressValidation } = require("../validation");
 
 /* GET get all address documents */
 router.get("/", auth, async (req, res) => {
-  //  check user permission to view addresses
+  //  check user permission
   const permission = await roles.can(req.user.role).readAny("address");
   if (!permission.granted)
-    return res
-      .status(400)
-      .json({ error: "Permission denied you can not access this resource" });
-
+    return res.status(400).json({ error: "Permission denied" });
   // Find all address documents
   Address.find((error, address) => {
-    if (error) return handleError(error);
+    if (error) return res.status(400).json({ error: error });
     res.send(address);
   });
 });
 
 /* POST crete a new address document */
 router.post("/create", auth, async (req, res) => {
-  //  check user permission to create addresses
+  //  check user permission
   const permission = await roles.can(req.user.role).createOwn("address");
   if (!permission.granted)
-    return res
-      .status(400)
-      .json({ error: "Permission denied you can not access this resource" });
+    return res.status(400).json({ error: "Permission denied" });
 
   // Validate address data
   const { error } = addressValidation(req.body);
@@ -46,10 +41,7 @@ router.get("/:id", auth, async (req, res) => {
   //  check user permission to view address
   const permission = await roles.can(req.user.role).readOwn("address");
   if (!permission.granted)
-    return res
-      .status(400)
-      .json({ error: "Permission denied you can not access this resource" });
-
+    return res.status(400).json({ error: "Permission denied" });
   // Find address by id
   Address.findById(req.params.id, (error, address) => {
     if (error) return res.status(400).json({ error: error });
@@ -62,10 +54,7 @@ router.put("/:id", auth, async (req, res) => {
   //  check user permission to edit address
   const permission = await roles.can(req.user.role).updateOwn("address");
   if (!permission.granted)
-    return res
-      .status(400)
-      .json({ error: "Permission denied you can not access this resource" });
-
+    return res.status(400).json({ error: "Permission denied" });
   // Validate address data
   const { error } = addressValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -84,12 +73,11 @@ router.put("/:id", auth, async (req, res) => {
 
 /* DELETE delete an address document */
 router.delete("/:id", auth, async (req, res) => {
-  //  check user permission to delete address
+  //  check user permission
   const permission = await roles.can(req.user.role).deleteOwn("address");
   if (!permission.granted)
-    return res
-      .status(400)
-      .json({ error: "Permission denied you can not access this resource" });
+    return res.status(400).json({ error: "Permission denied" });
+
   // Find and delete address by id
   Address.findByIdAndRemove(req.params.id, (error, address) => {
     if (error) return res.status(400).json({ error: error });

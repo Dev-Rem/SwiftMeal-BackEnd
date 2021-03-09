@@ -55,13 +55,13 @@ router.post("/login", async (req, res) => {
 
 /* Logout a user */
 router.post("/logout", auth, async (req, res) => {
-  // get user token from request headers
-  const token = req.header("auth-token");
-
-  //  check user permission to login
+  //  check user permission
   const permission = await roles.can(req.user.role).updateOwn("profile");
   if (!permission.granted)
     return res.status(400).json({ error: "Permission denied" });
+
+  // get user token from request headers
+  const token = req.header("auth-token");
 
   // find user account and delete token
   Account.findOne({ token: token }, (error, account) => {
@@ -74,15 +74,13 @@ router.post("/logout", auth, async (req, res) => {
 
 /* Get a single user account */
 router.get("/user", auth, async (req, res) => {
-  // get user token from request headers
-  const token = req.header("auth-token");
-
-  //  check user permission to view profile
+  //  check user permission
   const permission = await roles.can(req.user.role).readOwn("profile");
   if (!permission.granted)
-    return res
-      .status(400)
-      .json({ error: "Permission denied you can not access this resource" });
+    return res.status(400).json({ error: "Permission denied" });
+
+  // get user token from request headers
+  const token = req.header("auth-token");
 
   // find account using token and return user infomation
   const account = await Account.findOne({ token: token });
@@ -97,20 +95,20 @@ router.get("/user", auth, async (req, res) => {
     phoneNumber: account.phoneNumber,
     email: account.email,
     role: account.role,
-    address_id: account.address_id,
+    addressId: account.addressId,
   });
 });
 
 /* POST create new user address document */
 router.post("/address/create", auth, async (req, res) => {
-  // validate address info
-  const { error } = addressValidation(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-
-  //  check user permission to create address
+  //  check user permission
   const permission = await roles.can(req.user.role).createOwn("address");
   if (!permission.granted)
     return res.status(400).json({ error: "Permission denied" });
+
+  // validate address info
+  const { error } = addressValidation(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
 
   // create new user address
   const address = new Address(req.body);
@@ -120,7 +118,7 @@ router.post("/address/create", auth, async (req, res) => {
     // find authenticated user document
     Account.findByIdAndUpdate(
       { _id: req.user._id },
-      { address_id: address._id },
+      { addressId: address._id },
       (error, account) => {
         if (error) return res.status(400).json({ error: error });
         account.save();
