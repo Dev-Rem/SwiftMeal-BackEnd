@@ -4,7 +4,8 @@ const { Schema } = mongoose;
 const SectionSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
-    menuId: { type: Schema.Types.ObjectId, ref: "Menu" },
+    description: { type: String, trim: true },
+    foods: [{ type: Schema.Types.ObjectId, ref: "Food" }],
   },
   {
     timestamps: true,

@@ -15,6 +15,7 @@ exports.roles = (function () {
 
   ac.grant("admin")
     .extend("user")
+    .createAny("profile")
     .updateAny("profile")
     .deleteAny("profile")
     .createAny("restaurant")

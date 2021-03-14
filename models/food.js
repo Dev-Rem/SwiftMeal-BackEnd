@@ -4,10 +4,9 @@ const { Schema } = mongoose;
 const FoodSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
-    price: Number,
+    price: { type: Number, required: true },
     picture: { data: Buffer, contentType: String, required: true },
-    description: { type: String, required: true, trim: true },
-    section_id: { type: String, required: true, trim: true },
+    description: { type: String, trim: true },
   },
   {
     timestamps: true,

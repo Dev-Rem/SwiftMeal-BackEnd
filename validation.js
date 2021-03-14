@@ -47,7 +47,8 @@ exports.menuValidation = (data) => {
   const schema = Joi.object({
     restaurantId: Joi.string(),
     name: Joi.string().required(),
-    description: Joi.string().required(),
+    description: Joi.string(),
+    sections: Joi.array(),
   });
   return schema.validate(data);
 };
@@ -55,7 +56,8 @@ exports.menuValidation = (data) => {
 exports.sectionValidation = (data) => {
   const schema = Joi.object({
     name: Joi.string().required(),
-    menuId: Joi.string(),
+    description: Joi.string(),
+    foods: Joi.array(),
   });
   return schema.validate(data);
 };
