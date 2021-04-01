@@ -7,7 +7,7 @@ const router = express.Router();
 
 /* Create new restaurant menu */
 router.post(
-  ":id/create/menu",
+  "/:restId/create",
   auth,
   grantAccess("createAny", "menu"),
   async (req, res) => {
@@ -18,13 +18,13 @@ router.post(
     // Create new restaurant menu
     Menu.create(
       {
-        restaurantId: req.params.id,
+        restaurantId: req.params.restId,
         name: req.body.name,
         description: req.body.description,
       },
       (error, menu) => {
         if (error) return res.status(400).json({ error: error });
-        res.send(menu);
+        res.status(200).json(menu);
       }
     );
   }
@@ -32,63 +32,58 @@ router.post(
 
 /* Get all restaurant menus */
 router.get("/:id", auth, grantAccess("readAny", "menu"), async (req, res) => {
-  Menu.find({}, (error, menus) => {
+  Menu.find({ restaurantId: req.params.id }, (error, menus) => {
     if (error) return res.status(400).json({ error: error });
-    res.send(menus);
+    res.status(200).json(menus);
   });
 });
 
 /* Get a single restaurant menu */
 router.get(
-  "/:restID/:menuId",
+  "/:menuId",
   auth,
   grantAccess("readAny", "menu"),
   async (req, res) => {
     Menu.findById(req.params.menuId, (error, menu) => {
       if (error) return res.status(400).json({ error: error });
-      res.send(menu);
+      res.status(200).json(menu);
     });
   }
 );
 
 /* Update the a restarant menu */
-router.put(
-  "/:restId/:menuId",
-  auth,
-  grantAccess("updateAny", "menu"),
-  (req, res) => {
-    // Validate request data
-    const { error } = menuValidation(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+router.put("/:menuId", auth, grantAccess("updateAny", "menu"), (req, res) => {
+  // Validate request data
+  const { error } = menuValidation(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
 
-    // update menu document
-    Menu.findByIdAndUpdate(
-      req.params.menuId,
-      {
-        restaurantId: req.params.restId,
-        name: req.body.name,
-        description: req.body.description,
-      },
-      { new: true },
-      (error, menu) => {
-        if (error) return res.status(400).json({ error: error });
-        res.send(menu);
-      }
-    );
-  }
-);
+  // update menu document
+  Menu.findByIdAndUpdate(
+    req.params.menuId,
+    {
+      name: req.body.name,
+      description: req.body.description,
+    },
+    { new: true },
+    (error, menu) => {
+      if (error) return res.status(400).json({ error: error });
+      res.status(200).json(menu);
+    }
+  );
+});
 
 /* Delete a restaurant menu */
 router.delete(
-  "/:restId/:menuId",
+  "/:menuId",
   auth,
   grantAccess("deleteAny", "menu"),
   (req, res) => {
     //  delete menu document
     Menu.findByIdAndRemove(req.params.menuId, (error, menu) => {
       if (error) return res.status(400).json({ error: error });
-      res.send({ status: "menu deleted" });
+      res.status(200).json({ status: "menu deleted" });
     });
   }
 );
+
 module.exports = router;

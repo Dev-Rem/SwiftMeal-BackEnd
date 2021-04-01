@@ -6,7 +6,6 @@ const { sectionValidation } = require("../validation");
 const router = express.Router();
 
 /* Create new section */
-
 router.post(
   "/:menuId/create",
   auth,
@@ -16,26 +15,73 @@ router.post(
     const { error } = sectionValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    Section.create(req.body, async (error, section) => {
-      if (error) return res.status(400).json({ error: error });
-      await Menu.findByIdAndUpdate(req.params.menuId, {
-        $push: { scetions: section._id },
-      });
-      res.send(section);
-    });
+    Section.create(
+      {
+        menuId: req.params.menuId,
+        name: req.body.name,
+        description: req.body.description,
+      },
+      (error, section) => {
+        if (error) return res.status(400).json({ error: error });
+        res.send(section);
+      }
+    );
   }
 );
 
 /* Get all menu sections */
-
-router.get("/:menuId", auth, grantAccess("readAny", "section"), (req, res) => {
-  Section.find({}, (error, scetions) => {
+router.get("/:menuId", grantAccess("readAny", "section"), (req, res) => {
+  // Get all section documents based on the menu id
+  Section.find({ menuId: req.params.menuId }, (error, sections) => {
     if (error) return res.status(400).json({ error: error });
-    res.send(sections);
+    res.status(200).json(sections);
   });
 });
 
 /* Get a single menu section */
-// router.get();
+router.get(
+  "/:menuId/:sectionId",
+  grantAccess("readAny", "section"),
+  (req, res) => {
+    Section.findById(req.params.sectionId, (error, section) => {
+      if (error) return res.status(400).json({ error: error });
+      if (section.menuId != req.params.menuId) {
+        res
+          .status(400)
+          .send("Requested section does not belong under this menu");
+      }
+      res.status(200).json(section);
+    });
+  }
+);
+
+/* PUT update a section document */
+router.put(
+  "/:sectionId",
+  auth,
+  grantAccess("updateAny", "section"),
+  (req, res) => {
+    // Validate request data
+    const { error } = sectionValidation(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+
+    Section.findByIdAndUpdate(req.body, (error, scetion) => {
+      if (error) return res.status(400).json({ error: error });
+      res.status(200).json(section);
+    });
+  }
+);
+
+/* DELETE  delete a section document */
+router.delete(
+  "/:sectionId",
+  auth,
+  grantAccess("deleteAny", "section"),
+  (req, res) => {
+    Section.findByIdAndRemove(req.params.sectionId, (error, section) => {
+      if (error) return res.status(400).json({ error: error });
+    });
+  }
+);
 
 module.exports = router;

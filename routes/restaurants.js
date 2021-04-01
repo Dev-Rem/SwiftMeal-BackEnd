@@ -17,10 +17,9 @@ router.post(
     if (error) return res.status(400).send(error.details[0].message);
 
     // create new restaurant after data validation
-    const restaurant = new Restaurant(req.body);
-    restaurant.save((error, restaurant) => {
+    Restaurant.create(req.body, (error, restaurant) => {
       if (error) return res.status(400).json({ error: error });
-      res.send(restaurant);
+      res.status(200).json(restaurant);
     });
   }
 );
@@ -33,7 +32,7 @@ router.get(
   async (req, res) => {
     Restaurant.find({}).exec((error, restaurant) => {
       if (error) return res.status(400).json({ error: error });
-      res.send(restaurant);
+      res.status(200).json(restaurant);
     });
   }
 );
@@ -45,9 +44,10 @@ router.get(
   grantAccess("readAny", "restaurant"),
   async (req, res) => {
     // Find restaurant document
-    const restaurant = await Restaurant.findById(req.params.id);
-    if (!restaurant) return res.status(400).send("Bad request");
-    res.send(restaurant);
+    await Restaurant.findById(req.params.id, (error, restaurant) => {
+      if (error) return res.status(400).json({ error: error });
+      res.status(200).json(restaurant);
+    });
   }
 );
 
@@ -62,12 +62,12 @@ router.put(
     if (error) return res.status(400).send(error.details[0].message);
 
     // Find and update restaurant document
-    Restaurant.findByIdAndUpdate(req.params.id, req.body, { new: true }).exec(
-      (error, restaurant) => {
-        if (error) return res.status(400).json({ error: error });
-        res.send(restaurant);
-      }
-    );
+    await Restaurant.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    }).exec((error, restaurant) => {
+      if (error) return res.status(400).json({ error: error });
+      res.status(200).json(restaurant);
+    });
   }
 );
 
@@ -83,9 +83,7 @@ router.delete(
 
       // find and delete related address document
       await Address.findByIdAndRemove(restaurant.addressId);
-      res.json({
-        status: "deleted",
-      });
+      res.status(200).json({ status: "deleted" });
     });
   }
 );
@@ -109,9 +107,7 @@ router.post(
     Restaurant.findById({ _id: req.params.id }, (error, restaurant) => {
       if (error) return res.status(400).json({ error: error });
       if (!restaurant)
-        return res
-          .status(400)
-          .json({ error: "Restaurant does not exist in database" });
+        return res.status(400).json({ error: "Restaurant does not exist" });
       restaurant.addressId = saved_address._id;
       restaurant.save();
     });

@@ -10,7 +10,7 @@ router.get("/", auth, grantAccess("readAny", "address"), async (req, res) => {
   // Find all address documents
   Address.find((error, address) => {
     if (error) return res.status(400).json({ error: error });
-    res.send(address);
+    res.status(200).json(address);
   });
 });
 
@@ -27,7 +27,7 @@ router.post(
     Address.create(req.body, async (error, address) => {
       if (error) return res.status(400).json({ error: error });
       await address.save();
-      res.json(account);
+      res.status(200).json(account);
     });
   }
 );
@@ -41,7 +41,7 @@ router.get(
     // Find address by id
     Address.findById(req.params.id, (error, address) => {
       if (error) return res.status(400).json({ error: error });
-      res.send(address);
+      res.status(200).json(address);
     });
   }
 );
@@ -63,7 +63,7 @@ router.put(
       { new: true },
       (error, address) => {
         if (error) return res.status(400).json({ error: error });
-        res.send(address);
+        res.status(200).json(address);
       }
     );
   }
@@ -78,7 +78,7 @@ router.delete(
     // Find and delete address by id
     Address.findByIdAndRemove(req.params.id, (error, address) => {
       if (error) return res.status(400).json({ error: error });
-      res.send({ status: "address deleted" });
+      res.status(200).json({ status: "address deleted" });
     });
   }
 );

@@ -21,10 +21,10 @@ router.post("/register", async (req, res) => {
   if (userExist) return res.status(400).send("Email already exists");
 
   // create new user account and return account
-  const account = new Account(req.body);
+  const account = Account.create(req.body);
   account.save((error, account) => {
     if (error) res.status(400).send(error);
-    res.send(account);
+    res.status(200).json(account);
   });
 });
 
@@ -110,7 +110,7 @@ router.post(
     if (error) return res.status(400).send(error.details[0].message);
 
     // create new user address
-    const address = new Address(req.body);
+    const address = Address.create(req.body);
     await address.save((error, address) => {
       if (error) return res.status(400).send("Unable to save address");
 
