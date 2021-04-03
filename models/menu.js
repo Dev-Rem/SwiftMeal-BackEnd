@@ -12,4 +12,9 @@ const MenuSchema = new Schema(
   }
 );
 
+/* Pre update middleware used to update the __v field on each document update */
+MenuSchema.pre("update", function (next) {
+  this.update({}, { $inc: { __v: 1 } }, next);
+});
+
 module.exports = mongoose.model("Menu", MenuSchema);

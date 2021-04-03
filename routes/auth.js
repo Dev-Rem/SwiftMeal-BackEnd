@@ -21,8 +21,7 @@ router.post("/register", async (req, res) => {
   if (userExist) return res.status(400).send("Email already exists");
 
   // create new user account and return account
-  const account = Account.create(req.body);
-  account.save((error, account) => {
+  Account.create(req.body, (error, account) => {
     if (error) res.status(400).send(error);
     res.status(200).json(account);
   });

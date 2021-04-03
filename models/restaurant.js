@@ -22,12 +22,18 @@ const RestaurantSchema = new Schema(
   }
 );
 
+/* Plugin for the phoneNumber field */
 RestaurantSchema.plugin(mongooseIntlPhoneNumber, {
   hook: "validate",
   phoneNumberField: "phoneNumber",
   nationalFormatField: "nationalFormat",
   internationalFormat: "internationalFormat",
   countryCodeField: "countryCode",
+});
+
+/* Pre update middleware used to update the __v field on each document update */
+RestaurantSchema.pre("update", function (next) {
+  this.update({}, { $inc: { __v: 1 } }, next);
 });
 
 module.exports = mongoose.model("Restaurant", RestaurantSchema);

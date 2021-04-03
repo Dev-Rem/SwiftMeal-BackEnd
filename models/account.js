@@ -7,6 +7,7 @@ const bycrypt = require("bcrypt"),
   SALT_WORK_FACTOR = 10;
 const { Schema } = mongoose;
 
+/* Account schema definition */
 const AccountSchema = new Schema(
   {
     firstName: { type: String, required: true, trim: true },
@@ -33,7 +34,7 @@ const AccountSchema = new Schema(
     timestamps: true,
   }
 );
-
+/* Plugin for the phoneNumber field */
 AccountSchema.plugin(mongooseIntlPhoneNumber, {
   hook: "validate",
   phoneNumberField: "phoneNumber",
@@ -42,6 +43,7 @@ AccountSchema.plugin(mongooseIntlPhoneNumber, {
   countryCodeField: "countryCode",
 });
 
+/* Pre save middleware used to hash password before saving to the database */
 AccountSchema.pre("save", function (next) {
   var user = this;
 
@@ -57,6 +59,12 @@ AccountSchema.pre("save", function (next) {
   });
 });
 
+/* Pre update middleware used to update the __v field on each document update */
+AccountSchema.pre("update", function (next) {
+  this.update({}, { $inc: { __v: 1 } }, next);
+});
+
+/* Add new method to model schema "comparePassword" to check for password match */
 AccountSchema.methods.comparePassword = function (candidatePassword, callBack) {
   bycrypt.compare(candidatePassword, this.password, (error, isMatch) => {
     if (error) return callBack(error);
@@ -64,6 +72,7 @@ AccountSchema.methods.comparePassword = function (candidatePassword, callBack) {
   });
 };
 
+/* Add new method to schema "generateToken" for the generation of new token on user login */
 AccountSchema.methods.generateToken = function (callBack) {
   var user = this;
   var token = jwt.sign(
