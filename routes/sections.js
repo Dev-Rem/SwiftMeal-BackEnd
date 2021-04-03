@@ -2,7 +2,10 @@ const express = require("express");
 const Menu = require("../models/menu");
 const Section = require("../models/section");
 const { auth, grantAccess } = require("./authController");
-const { sectionValidation } = require("../validation");
+const {
+  sectionCreateValidation,
+  sectionUpdateValidation,
+} = require("../validation");
 const router = express.Router();
 
 /* Create new section */
@@ -62,7 +65,7 @@ router.put(
   grantAccess("updateAny", "section"),
   (req, res) => {
     // Validate request data
-    const { error } = sectionValidation(req.body);
+    const { error } = sectionUpdateValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     Section.findByIdAndUpdate(req.body, (error, scetion) => {

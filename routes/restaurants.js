@@ -62,12 +62,15 @@ router.put(
     if (error) return res.status(400).send(error.details[0].message);
 
     // Find and update restaurant document
-    await Restaurant.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    }).exec((error, restaurant) => {
-      if (error) return res.status(400).json({ error: error });
-      res.status(200).json(restaurant);
-    });
+    await Restaurant.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true },
+      (error, restaurant) => {
+        if (error) return res.status(400).json({ error: error });
+        res.status(200).json(restaurant);
+      }
+    );
   }
 );
 
@@ -78,12 +81,12 @@ router.delete(
   auth,
   async (req, res) => {
     // find and delete restaurant document
-    Restaurant.findByIdAndRemove(req.params.id, async (error, restaurant) => {
+    Restaurant.findByIdAndRemove(req.params.id, (error, restaurant) => {
       if (error) return res.status(400).json({ error: error });
 
       // find and delete related address document
-      await Address.findByIdAndRemove(restaurant.addressId);
-      res.status(200).json({ status: "deleted" });
+      Address.findByIdAndRemove(restaurant.addressId);
+      res.status(200).json({ status: "Success" });
     });
   }
 );
@@ -103,7 +106,6 @@ router.post(
     const saved_address = await address.save();
     if (!saved_address) return res.status(400).send("Unable to save address");
 
-    // find authenticated user document
     Restaurant.findById({ _id: req.params.id }, (error, restaurant) => {
       if (error) return res.status(400).json({ error: error });
       if (!restaurant)

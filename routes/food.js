@@ -2,7 +2,7 @@ const express = require("express");
 const Section = require("../models/section");
 const Food = require("../models/food");
 const { auth, grantAccess } = require("./authController");
-const { foodValidation } = require("../validation");
+const { foodCreateValidation, foodUpdateValidation } = require("../validation");
 const router = express.Router();
 
 /* POST create new food document */
@@ -12,7 +12,7 @@ router.post(
   grantAccess("createAny", "food"),
   async (req, res) => {
     // Validate request data
-    const { error } = foodValidation(req.body);
+    const { error } = foodCreateValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     //   create new food document
@@ -55,7 +55,7 @@ router.put(
   grantAccess("updateAny", "food"),
   async (req, res) => {
     // Validate request data
-    const { error } = foodValidation(req.body);
+    const { error } = foodUpdateValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     //   find document by id and update

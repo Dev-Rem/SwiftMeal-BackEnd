@@ -2,7 +2,7 @@ const express = require("express");
 const Restaurant = require("../models/restaurant");
 const Menu = require("../models/menu");
 const { auth, grantAccess } = require("./authController");
-const { menuValidation } = require("../validation");
+const { menuCreateValidation, menuUpdateValidation } = require("../validation");
 const router = express.Router();
 
 /* Create new restaurant menu */
@@ -12,7 +12,7 @@ router.post(
   grantAccess("createAny", "menu"),
   async (req, res) => {
     // Validate request data
-    const { error } = menuValidation(req.body);
+    const { error } = menuCreateValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     // Create new restaurant menu
@@ -31,15 +31,15 @@ router.post(
 );
 
 /* Get all restaurant menus */
-router.get("/:restId", grantAccess("readAny", "menu"), async (req, res) => {
-  await Menu.find({ restaurantId: req.params.Id }, (error, menus) => {
+router.get("/:restId", async (req, res) => {
+  await Menu.find({ restaurantId: req.params.restId }, (error, menus) => {
     if (error) return res.status(400).json({ error: error });
     res.status(200).json(menus);
   });
 });
 
 /* Get a single menu document */
-router.get("/:menuId", grantAccess("readAny", "menu"), async (req, res) => {
+router.get("/:restId/:menuId", async (req, res) => {
   await Menu.findById(req.params.menuId, (error, menu) => {
     if (error) return res.status(400).json({ error: error });
     res.status(200).json(menu);
@@ -53,7 +53,7 @@ router.put(
   grantAccess("updateAny", "menu"),
   async (req, res) => {
     // Validate request data
-    const { error } = menuValidation(req.body);
+    const { error } = menuUpdateValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     // update menu document
