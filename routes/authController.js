@@ -5,7 +5,7 @@ exports.auth = function (req, res, next) {
   //  get user auth token
   const token = req.header("auth-token");
   if (!token)
-    return res.status(401).send("Access denied or token was not provided");
+    return res.status(400).send("Access denied or token was not provided");
 
   try {
     const verified = jwt.verify(token, process.env.SECRET);
@@ -21,7 +21,7 @@ exports.grantAccess = function (action, resource) {
     try {
       const permission = roles.can(req.user.role)[action](resource);
       if (!permission.granted) {
-        return res.status(401).json({
+        return res.status(400).json({
           error: "Permission denied",
         });
       }

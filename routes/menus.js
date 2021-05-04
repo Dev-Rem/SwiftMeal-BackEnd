@@ -1,8 +1,8 @@
 const express = require("express");
-const Restaurant = require("../models/restaurant");
+const Section = require("../models/section");
 const Menu = require("../models/menu");
 const { auth, grantAccess } = require("./authController");
-const { menuCreateValidation, menuUpdateValidation } = require("../validation");
+const { menuValidation } = require("../validation");
 const router = express.Router();
 
 /* Create new restaurant menu */
@@ -12,7 +12,7 @@ router.post(
   grantAccess("createAny", "menu"),
   async (req, res) => {
     // Validate request data
-    const { error } = menuCreateValidation(req.body);
+    const { error } = menuValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     // Create new restaurant menu
@@ -53,7 +53,7 @@ router.put(
   grantAccess("updateAny", "menu"),
   async (req, res) => {
     // Validate request data
-    const { error } = menuUpdateValidation(req.body);
+    const { error } = menuValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     // update menu document
@@ -63,6 +63,7 @@ router.put(
       { new: true },
       (error, menu) => {
         if (error) return res.status(400).json({ error: error });
+        menu.save();
         res.status(200).json(menu);
       }
     );
@@ -76,9 +77,17 @@ router.delete(
   grantAccess("deleteAny", "menu"),
   (req, res) => {
     //  delete menu document
-    Menu.findByIdAndRemove(req.params.menuId, (error) => {
+    Menu.findByIdAndRemove(req.params.menuId, async (error) => {
       if (error) return res.status(400).json({ error: error });
-      res.status(200).json({ status: "Success" });
+
+      // find and delete all sections under this menu
+      const deleted_sections = await Section.deleteMany({
+        menuId: req.params.menuId,
+      });
+      res.status(200).json({
+        status: "Success",
+        deleted_sections: deleted_sections.deletedCount,
+      });
     });
   }
 );

@@ -43,60 +43,29 @@ exports.restaurantValidation = (data) => {
   return schema.validate(data);
 };
 
-exports.menuCreateValidation = (data) => {
+exports.menuValidation = (data) => {
   const schema = Joi.object({
-    restaurantId: Joi.string().required(),
+    restaurantId: Joi.string(),
     name: Joi.string().required(),
-    description: Joi.string(),
-    sections: Joi.array(),
-  });
-  return schema.validate(data);
-};
-
-exports.menuUpdateValidation = (data) => {
-  const schema = Joi.object({
-    name: Joi.string().required(),
-    description: Joi.string(),
-    sections: Joi.array(),
-  });
-  return schema.validate(data);
-};
-
-exports.sectionCreateValidation = (data) => {
-  const schema = Joi.object({
-    menuId: Joi.string().required(),
-    name: Joi.string().required(),
-    description: Joi.string(),
-  });
-  return schema.validate(data);
-};
-
-exports.sectionUpdateValidation = (data) => {
-  const schema = Joi.object({
-    menuId: Joi.string(),
-    name: Joi.string().required(),
-    description: Joi.string(),
-  });
-  return schema.validate(data);
-};
-
-exports.foodCreateValidation = (data) => {
-  const schema = Joi.object({
-    sectionId: Joi.string().required(),
-    name: Joi.string().required(),
-    price: Joi.number().integer().required(),
-    picture: Joi.string().required(),
     description: Joi.string().required(),
   });
   return schema.validate(data);
 };
 
-exports.foodUpdateValidation = (data) => {
+exports.sectionValidation = (data) => {
+  const schema = Joi.object({
+    menuId: Joi.string(),
+    name: Joi.string().required(),
+    description: Joi.string().required(),
+  });
+  return schema.validate(data);
+};
+
+exports.foodValidation = (data) => {
   const schema = Joi.object({
     sectionId: Joi.string(),
     name: Joi.string().required(),
     price: Joi.number().integer().required(),
-    picture: Joi.string().required(),
     description: Joi.string().required(),
   });
   return schema.validate(data);
