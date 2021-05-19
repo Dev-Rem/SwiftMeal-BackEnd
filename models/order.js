@@ -3,11 +3,10 @@ const { Schema } = mongoose;
 
 const OrderSchema = Schema(
   {
-    account_id: { type: Schema.Types.ObjectId, ref: "Account" },
+    userId: { type: Schema.Types.ObjectId, ref: "Account" },
+    cartId: { type: Schema.Types.ObjectId, ref: "Cart" },
     restaurant_id: { type: Schema.Types.ObjectId, ref: "Restaurant" },
-    data: { type: Date, required: true },
     status: { type: String, required: true, trim: true },
-    time: { type: Date, default: Date.now },
   },
   {
     timestamps: true,

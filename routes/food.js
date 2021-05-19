@@ -42,7 +42,7 @@ router.post(
 
     s3bucket.upload(params, (error, data) => {
       if (error) return res.status(400).json({ error: error });
-      console.log(data);
+
       //   create new food document
       Food.create(
         {
@@ -86,15 +86,9 @@ router.put(
   auth,
   grantAccess("updateAny", "food"),
   (req, res) => {
-    // console.log(req);
-    console.log(req.file);
-    console.log(req.body);
     // Validate request data
-    // const { error } = foodValidation(req.body);
-    // if (error) return res.status(400).send(error.details[0].message);
-
-    const file = fs.readFileSync(req.file.path);
-    const file_encode = file.toString("base64");
+    const { error } = foodValidation(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 
     //   find document by id and update
     Food.findByIdAndUpdate(
@@ -102,10 +96,6 @@ router.put(
       {
         name: req.body.name,
         price: req.body.price,
-        picture: {
-          data: new Buffer.alloc(10, file_encode, "base64"),
-          contentType: req.file.mimetype,
-        },
         description: req.body.description,
       },
       { new: true },
@@ -119,13 +109,26 @@ router.put(
 
 // DELETE delete a single food document
 router.delete(
-  "/:foodId",
+  "/:foodId/delete",
   auth,
   grantAccess("deleteAny", "food"),
   (req, res) => {
-    Food.findByIdAndRemove(req.params.foodId, (error) => {
+    Food.findByIdAndRemove(req.params.foodId, (error, food) => {
       if (error) return res.status(400).json({ error: error });
-      res.status(200).json({ status: "Success" });
+      const s3bucket = new AWS.S3({
+        accesKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: process.env.AWS_REGION,
+      });
+
+      const params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: food.picture.s3_key,
+      };
+      s3bucket.deleteObject(params, (error) => {
+        if (error) return res.status(400).json({ error: error });
+        res.status(200).json({ status: "Success" });
+      });
     });
   }
 );
