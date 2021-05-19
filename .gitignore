@@ -107,3 +107,4 @@ package.json
 .env
 scrapbook
 ./upload
+rootkey.csv

@@ -63,7 +63,6 @@ exports.sectionValidation = (data) => {
 
 exports.foodValidation = (data) => {
   const schema = Joi.object({
-    sectionId: Joi.string(),
     name: Joi.string().required(),
     price: Joi.number().integer().required(),
     description: Joi.string().required(),

@@ -6,7 +6,6 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
-// var multer = require("multer");
 
 const restaurantsRouter = require("./routes/restaurants");
 const addressRouter = require("./routes/addresses");
@@ -31,6 +30,7 @@ mongoose.connect(
     console.log("Connected to Database");
   }
 );
+mongoose.set("returnOriginal", false);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -67,16 +67,5 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-// // multer middleware for image uploads
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "uploads");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, file.fieldname + "-" + Date.now());
-//   },
-// });
-
-// const upload = multer({ storage: storage });
 
 module.exports = app;
