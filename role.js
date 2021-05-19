@@ -12,7 +12,11 @@ exports.roles = (function () {
     .readAny("restaurant")
     .readAny("menu")
     .readAny("section")
-    .readAny("food");
+    .readAny("food")
+    .createOwn("item")
+    .readOwn("item")
+    .updateOwn("item")
+    .deleteOwn("item");
 
   ac.grant("admin")
     .extend("user")

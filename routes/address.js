@@ -2,7 +2,6 @@ const express = require("express");
 const Address = require("../models/address.js");
 const router = express.Router();
 const { auth, grantAccess } = require("./authController");
-const { roles } = require("../role");
 const { addressValidation } = require("../validation");
 
 /* GET get all address documents */
@@ -14,7 +13,7 @@ router.get("/", auth, grantAccess("readAny", "address"), async (req, res) => {
   });
 });
 
-/* POST crete a new address document */
+/* POST create a new address document */
 router.post(
   "/create",
   auth,
@@ -59,7 +58,7 @@ router.put(
     // Find and update address by id
     Address.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      { $set: req.body },
       { new: true },
       (error, address) => {
         if (error) return res.status(400).json({ error: error });
@@ -76,7 +75,7 @@ router.delete(
   grantAccess("deleteOwn", "address"),
   async (req, res) => {
     // Find and delete address by id
-    Address.findByIdAndRemove(req.params.id, (error, address) => {
+    Address.findByIdAndRemove(req.params.id, (error) => {
       if (error) return res.status(400).json({ error: error });
       res.status(200).json({ status: "address deleted" });
     });

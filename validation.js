@@ -69,3 +69,12 @@ exports.foodValidation = (data) => {
   });
   return schema.validate(data);
 };
+
+exports.itemValidation = (data) => {
+  const schema = Joi.object({
+    discount: Joi.number().integer(),
+    quantity: Joi.number().integer().required(),
+    // subTotal: Joi.number().interger(),
+  });
+  return schema.validate(data);
+};

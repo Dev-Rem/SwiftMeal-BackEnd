@@ -15,5 +15,4 @@ const CartSchema = new Schema(
 ItemSchema.pre("update", function (next) {
   this.update({}, { $inc: { __v: 1 } }, next);
 });
-
 module.exports = mongoose.model("Cart", CartSchema);
