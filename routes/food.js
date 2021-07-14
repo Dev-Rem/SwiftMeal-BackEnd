@@ -1,7 +1,5 @@
 require("dotenv").config();
 const express = require("express");
-const fs = require("fs");
-const path = require("path");
 const Food = require("../models/food");
 const { auth, grantAccess } = require("./authController");
 const { foodValidation } = require("../validation");

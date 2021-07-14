@@ -1,9 +1,9 @@
 const express = require("express");
 const Account = require("../models/account.js");
 const Address = require("../models/address.js");
+const Cart = require("../models/cart");
 const router = express.Router();
 const { auth, grantAccess } = require("./authController");
-const { roles } = require("../role");
 const {
   registerValidation,
   loginValidation,
@@ -23,7 +23,10 @@ router.post("/register", async (req, res) => {
   // create new user account and return account
   Account.create(req.body, (error, account) => {
     if (error) res.status(400).send(error);
-    res.status(200).json(account);
+    Cart.create({ userId: account._id }, (error) => {
+      if (error) res.status(400).send(error);
+      res.status(200).json(account);
+    });
   });
 });
 
@@ -94,36 +97,6 @@ router.get(
       email: account.email,
       role: account.role,
       addressId: account.addressId,
-    });
-  }
-);
-
-/* POST create new user address document */
-router.post(
-  "/address/create",
-  grantAccess("createOwn", "address"),
-  auth,
-  async (req, res) => {
-    // validate address info
-    const { error } = addressValidation(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-
-    // create new user address
-    const address = Address.create(req.body);
-    await address.save((error, address) => {
-      if (error) return res.status(400).send("Unable to save address");
-
-      // find authenticated user document
-      Account.findByIdAndUpdate(
-        { _id: req.user._id },
-        { addressId: address._id },
-        (error, account) => {
-          if (error) return res.status(400).json({ error: error });
-          account.save();
-        }
-      );
-
-      res.status(200).send(address);
     });
   }
 );

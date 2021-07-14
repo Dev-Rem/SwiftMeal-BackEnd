@@ -5,11 +5,11 @@ const { auth, grantAccess } = require("./authController");
 const { addressValidation } = require("../validation");
 
 /* GET get all address documents */
-router.get("/", auth, grantAccess("readAny", "address"), async (req, res) => {
+router.get("/", auth, grantAccess("readOwn", "address"), async (req, res) => {
   // Find all address documents
-  Address.find((error, address) => {
+  Address.find({ accountId: req.user._id }, (error, addresses) => {
     if (error) return res.status(400).json({ error: error });
-    res.status(200).json(address);
+    res.status(200).json(addresses);
   });
 });
 
@@ -23,25 +23,21 @@ router.post(
     const { error } = addressValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     // Create new address document
-    Address.create(req.body, async (error, address) => {
-      if (error) return res.status(400).json({ error: error });
-      await address.save();
-      res.status(200).json(account);
-    });
-  }
-);
-
-/* GET get a single address document */
-router.get(
-  "/:id",
-  auth,
-  grantAccess("readOwn", "address"),
-  async (req, res) => {
-    // Find address by id
-    Address.findById(req.params.id, (error, address) => {
-      if (error) return res.status(400).json({ error: error });
-      res.status(200).json(address);
-    });
+    Address.create(
+      {
+        accountId: req.user._id,
+        streetNumber: req.body.streetNumber,
+        streetName: req.body.streetName,
+        city: req.body.city,
+        postalCode: req.body.postalCode,
+        country: req.body.country,
+      },
+      async (error, address) => {
+        if (error) return res.status(400).json({ error: error });
+        await address.save();
+        res.status(200).json(address);
+      }
+    );
   }
 );
 

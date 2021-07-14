@@ -5,6 +5,7 @@ const ac = new AccessControl();
 exports.roles = (function () {
   ac.grant("user")
     .readOwn("profile")
+    .readOwn('address')
     .updateOwn("profile")
     .createOwn("address")
     .updateOwn("address")
@@ -16,7 +17,11 @@ exports.roles = (function () {
     .createOwn("item")
     .readOwn("item")
     .updateOwn("item")
-    .deleteOwn("item");
+    .deleteOwn("item")
+    .createOwn("cart")
+    .updateOwn("cart")
+    .readOwn("cart")
+    .deleteOwn("cart");
 
   ac.grant("admin")
     .extend("user")

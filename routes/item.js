@@ -1,5 +1,6 @@
 const express = require("express");
 const Item = require("../models/item.js");
+const Cart = require("../models/cart.js");
 const router = express.Router();
 const { auth, grantAccess } = require("./authController");
 const { itemValidation } = require("../validation");
@@ -10,6 +11,7 @@ router.post(
   auth,
   grantAccess("createOwn", "item"),
   (req, res) => {
+      console.log(req.user)
     // Validate address data
     const { error } = itemValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
@@ -23,6 +25,13 @@ router.post(
       },
       (error, item) => {
         if (error) return res.status(400).json({ error: error });
+        Cart.findOneAndUpdate(
+          { userId: req.user._id },
+          { $push: { items: item._id } },
+          (error) => {
+            if (error) return res.status(400).json({ error: error });
+          }
+        );
         res.status(200).json(item);
       }
     );
@@ -59,5 +68,15 @@ router.delete(
     });
   }
 );
+
+/* GET get all items in user cart */
+router.get("/cart", auth, grantAccess("readOwn", "cart"), (req, res) => {
+  Cart.findOne({ userId: req.user._id })
+    .populate("items")
+    .exec((error, cart) => {
+      if (error) return res.status(400).json({ error: error });
+      res.status(200).json(cart);
+    });
+});
 
 module.exports = router;
