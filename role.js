@@ -5,7 +5,7 @@ const ac = new AccessControl();
 exports.roles = (function () {
   ac.grant("user")
     .readOwn("profile")
-    .readOwn('address')
+    .readOwn("address")
     .updateOwn("profile")
     .createOwn("address")
     .updateOwn("address")

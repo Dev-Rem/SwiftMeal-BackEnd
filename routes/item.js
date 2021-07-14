@@ -5,13 +5,16 @@ const router = express.Router();
 const { auth, grantAccess } = require("./authController");
 const { itemValidation } = require("../validation");
 
-/* POST create item document route */
+/* 
+POST create item document route 
+params { id: food id to add to the item object }
+*/
 router.post(
-  "/:foodId/create",
+  "/:id/create",
   auth,
   grantAccess("createOwn", "item"),
   (req, res) => {
-      console.log(req.user)
+    console.log(req.user);
     // Validate address data
     const { error } = itemValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
@@ -25,6 +28,8 @@ router.post(
       },
       (error, item) => {
         if (error) return res.status(400).json({ error: error });
+
+        // update user cart 
         Cart.findOneAndUpdate(
           { userId: req.user._id },
           { $push: { items: item._id } },
@@ -68,15 +73,5 @@ router.delete(
     });
   }
 );
-
-/* GET get all items in user cart */
-router.get("/cart", auth, grantAccess("readOwn", "cart"), (req, res) => {
-  Cart.findOne({ userId: req.user._id })
-    .populate("items")
-    .exec((error, cart) => {
-      if (error) return res.status(400).json({ error: error });
-      res.status(200).json(cart);
-    });
-});
 
 module.exports = router;

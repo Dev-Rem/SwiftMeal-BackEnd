@@ -14,6 +14,7 @@ const sectionRouter = require("./routes/section");
 const menuRouter = require("./routes/menu");
 const foodRouter = require("./routes/food");
 const itemRouter = require("./routes/item");
+const cartRouter = require("./routes/cart");
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
@@ -52,6 +53,7 @@ app.use("/api/sections", sectionRouter);
 app.use("/api/menus", menuRouter);
 app.use("/api/foods", foodRouter);
 app.use("/api/items", itemRouter);
+app.use("/api/cart", cartRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
