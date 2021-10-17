@@ -93,7 +93,7 @@ router.delete(
 
 /* GET get all user cart items */
 router.get("/", auth, grantAccess("readOwn", "cart"), (req, res) => {
-  Cart.findOne({ accountId: req.user._id })
+  Cart.findOne({ accountId: req.user._id }, "items")
     .populate({
       path: "items",
       populate: {

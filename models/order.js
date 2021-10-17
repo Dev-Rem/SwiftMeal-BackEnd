@@ -3,9 +3,9 @@ const { Schema } = mongoose;
 
 const OrderSchema = Schema(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "Account" },
+    accountId: { type: Schema.Types.ObjectId, ref: "Account" },
     cartId: { type: Schema.Types.ObjectId, ref: "Cart" },
-    restaurant_id: { type: Schema.Types.ObjectId, ref: "Restaurant" },
+    restaurantId: { type: Schema.Types.ObjectId, ref: "Restaurant" },
     status: { type: String, required: true, trim: true },
   },
   {

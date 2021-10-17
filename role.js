@@ -21,7 +21,9 @@ exports.roles = (function () {
     .createOwn("cart")
     .updateOwn("cart")
     .readOwn("cart")
-    .deleteOwn("cart");
+    .deleteOwn("cart")
+    .createOwn("payment");
+  
 
   ac.grant("admin")
     .extend("user")

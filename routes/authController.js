@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 const { roles } = require("../role");
 
 exports.auth = function (req, res, next) {
-  console.log(req.user);
   //  get user auth token
   const token = req.header("Authorization");
   if (!token)

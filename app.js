@@ -15,6 +15,7 @@ const menuRouter = require("./routes/menu");
 const foodRouter = require("./routes/food");
 const itemRouter = require("./routes/item");
 const cartRouter = require("./routes/cart");
+const paymentRouter = require("./routes/payment");
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
@@ -33,10 +34,11 @@ mongoose.connect(
   }
 );
 mongoose.set("returnOriginal", false);
+mongoose.set("useFindAndModify", false);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "jade");
+app.set("view engine", "nunjuncks");
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -54,6 +56,7 @@ app.use("/api/menus", menuRouter);
 app.use("/api/foods", foodRouter);
 app.use("/api/items", itemRouter);
 app.use("/api/cart", cartRouter);
+app.use("/api/payment", paymentRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
