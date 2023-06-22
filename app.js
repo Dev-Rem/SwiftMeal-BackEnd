@@ -21,12 +21,12 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 const app = express();
-app.listen(process.env.PORT, () => {
-  console.log("listening on localhost: ${process.env.PORT}");
+app.listen(3001, () => {
+  console.log("listening on localhost:3001");
 });
 
 mongoose.connect(
-  process.env.DATABASE,
+  "mongodb://127.0.0.1:27017/swiftmeal-db",
   { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true },
   (error) => {
     if (error) return console.error(error);
@@ -35,6 +35,8 @@ mongoose.connect(
 );
 mongoose.set("returnOriginal", false);
 mongoose.set("useFindAndModify", false);
+
+// console.log(require("crypto").randomBytes(64).toString("hex"));
 
 // view engine setup
 app.set("view engine", "ejs");

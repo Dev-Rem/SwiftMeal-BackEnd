@@ -80,8 +80,9 @@ router.get(
   auth,
   grantAccess("readOwn", "profile"),
   async (req, res) => {
+    console.log(req);
     // get user token from request headers
-    const token = req.header("auth-token");
+    const token = req.header("authorization");
 
     // find account using token and return user infomation
     const account = await Account.findOne({ token: token });
