@@ -8,7 +8,7 @@ const router = express.Router();
 
 /* POST create new restaurant document */
 router.post(
-  "/create",
+  "/",
   auth,
   grantAccess("createAny", "restaurant"),
   async (req, res) => {
@@ -80,12 +80,13 @@ router.delete(
   grantAccess("deleteAny", "restaurant"),
   auth,
   async (req, res) => {
+    console.log('i got here')
     // find and delete restaurant document
     Restaurant.findByIdAndRemove(req.params.id, (error, restaurant) => {
       if (error) return res.status(400).json({ error: error });
 
       // find and delete related address document
-      Address.findByIdAndRemove(restaurant.addressId);
+      // Address.findByIdAndRemove(restaurant.addressId);
       res.status(200).json({ status: "Success" });
     });
   }

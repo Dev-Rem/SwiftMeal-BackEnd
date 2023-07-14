@@ -8,6 +8,12 @@ const RestaurantSchema = new Schema(
     addressId: { type: Schema.Types.ObjectId, ref: "Address" },
     name: { type: String, required: true, trim: true },
     phoneNumber: { type: String, required: true, trim: true, unique: true },
+    restaurantInfo: { type: String, trim: true },
+    image: {
+      data: Buffer, // Store the file as a binary buffer
+      contentType: String, // Store the file's content type
+      originalName: String, // Store the original file name
+    },
     email: {
       type: String,
       trim: true,
@@ -21,15 +27,6 @@ const RestaurantSchema = new Schema(
     timestamps: true,
   }
 );
-
-/* Plugin for the phoneNumber field */
-RestaurantSchema.plugin(mongooseIntlPhoneNumber, {
-  hook: "validate",
-  phoneNumberField: "phoneNumber",
-  nationalFormatField: "nationalFormat",
-  internationalFormat: "internationalFormat",
-  countryCodeField: "countryCode",
-});
 
 /* Pre update middleware used to update the __v field on each document update */
 RestaurantSchema.pre("update", function (next) {
