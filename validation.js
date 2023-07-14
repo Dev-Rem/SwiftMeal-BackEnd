@@ -36,9 +36,11 @@ exports.addressValidation = (data) => {
 
 exports.restaurantValidation = (data) => {
   const schema = Joi.object({
-    name: Joi.string().required().min(3).max(200),
-    phoneNumber: Joi.string().required().min(6).max(30),
-    email: Joi.string().min(6).max(200).required().email(),
+    name: Joi.string().required().min(3).max(1024),
+    phoneNumber: Joi.string().required().min(6).max(1024),
+    email: Joi.string().min(6).max(1024).required().email(),
+    restaurantInfo: Joi.string(),
+    image: Joi.string(),
   });
   return schema.validate(data);
 };
@@ -52,20 +54,12 @@ exports.menuValidation = (data) => {
   return schema.validate(data);
 };
 
-exports.sectionValidation = (data) => {
-  const schema = Joi.object({
-    menuId: Joi.string(),
-    name: Joi.string().required(),
-    description: Joi.string().required(),
-  });
-  return schema.validate(data);
-};
-
-exports.foodValidation = (data) => {
+exports.menuItemValidation = (data) => {
   const schema = Joi.object({
     name: Joi.string().required(),
     price: Joi.number().integer().required(),
-    description: Joi.string().required(),
+    description: Joi.string(),
+    image: Joi.string(),
   });
   return schema.validate(data);
 };

@@ -35,6 +35,7 @@
     "validator": "^13.5.2"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.0.2",
     "eslint": "^7.17.0",
     "nodemon": "^2.0.6"
   }

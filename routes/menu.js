@@ -1,13 +1,13 @@
 const express = require("express");
-const Section = require("../models/section");
 const Menu = require("../models/menu");
 const { auth, grantAccess } = require("./authController");
 const { menuValidation } = require("../validation");
 const router = express.Router();
 
 /* Create new restaurant menu */
+// the id passed should be the restuarant id
 router.post(
-  "/:restId/create",
+  "/:id/",
   auth,
   grantAccess("createAny", "menu"),
   async (req, res) => {
@@ -16,9 +16,9 @@ router.post(
     if (error) return res.status(400).send(error.details[0].message);
 
     // Create new restaurant menu
-    await Menu.create(
+    Menu.create(
       {
-        restaurantId: req.params.restId,
+        restaurantId: req.params.id,
         name: req.body.name,
         description: req.body.description,
       },
@@ -31,65 +31,54 @@ router.post(
 );
 
 /* Get all restaurant menus */
-router.get("/:restId", async (req, res) => {
-  await Menu.find({ restaurantId: req.params.restId }, (error, menus) => {
+// the id passed should be the restuarant id
+router.get("/:id", async (req, res) => {
+  await Menu.find({ restaurantId: req.params.id }, (error, menus) => {
     if (error) return res.status(400).json({ error: error });
     res.status(200).json(menus);
   });
 });
 
 /* Get a single menu document */
-router.get("/:restId/:menuId", async (req, res) => {
-  await Menu.findById(req.params.menuId, (error, menu) => {
+// the id passed should be the menu id
+router.get("/menu/:id/", async (req, res) => {
+  await Menu.findById(req.params.id, (error, menu) => {
     if (error) return res.status(400).json({ error: error });
     res.status(200).json(menu);
   });
 });
 
 /* Update the a restarant menu */
-router.put(
-  "/:menuId",
-  auth,
-  grantAccess("updateAny", "menu"),
-  async (req, res) => {
-    // Validate request data
-    const { error } = menuValidation(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+// the id passed should be the menu id
+router.put("/:id", auth, grantAccess("updateAny", "menu"), async (req, res) => {
+  // Validate request data
+  const { error } = menuValidation(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
 
-    // update menu document
-    await Menu.findByIdAndUpdate(
-      req.params.menuId,
-      req.body,
-      { new: true },
-      (error, menu) => {
-        if (error) return res.status(400).json({ error: error });
-        menu.save();
-        res.status(200).json(menu);
-      }
-    );
-  }
-);
+  // update menu document
+  await Menu.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true },
+    (error, menu) => {
+      if (error) return res.status(400).json({ error: error });
+      menu.save();
+      res.status(200).json(menu);
+    }
+  );
+});
 
 /* Delete a restaurant menu */
-router.delete(
-  "/:menuId",
-  auth,
-  grantAccess("deleteAny", "menu"),
-  (req, res) => {
-    //  delete menu document
-    Menu.findByIdAndRemove(req.params.menuId, async (error) => {
-      if (error) return res.status(400).json({ error: error });
+// the id passed should be the menu id
+router.delete("/:id", auth, grantAccess("deleteAny", "menu"), (req, res) => {
+  //  delete menu document
+  Menu.findByIdAndRemove(req.params.id, async (error) => {
+    if (error) return res.status(400).json({ error: error });
 
-      // find and delete all sections under this menu
-      const deleted_sections = await Section.deleteMany({
-        menuId: req.params.menuId,
-      });
-      res.status(200).json({
-        status: "Success",
-        deleted_sections: deleted_sections.deletedCount,
-      });
+    res.status(200).json({
+      status: "Success",
     });
-  }
-);
+  });
+});
 
 module.exports = router;

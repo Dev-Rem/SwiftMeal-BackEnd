@@ -1,14 +1,15 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const FoodSchema = new Schema(
+const MenuItemSchema = new Schema(
   {
-    sectionId: { type: Schema.Types.ObjectId, ref: "Section" },
+    menuId: { type: Schema.Types.ObjectId, ref: "Menu" },
     name: { type: String, required: true, trim: true },
     price: { type: Number, required: true },
-    picture: {
-      url: { type: String, required: true },
-      s3_key: { type: String, required: true },
+    image: {
+      data: Buffer, // Store the file as a binary buffer
+      contentType: String, // Store the file's content type
+      originalName: String, // Store the original file name
     },
     description: { type: String, trim: true },
   },
@@ -18,8 +19,8 @@ const FoodSchema = new Schema(
 );
 
 /* Pre update middleware used to update the __v field on each document update */
-FoodSchema.pre("update", function (next) {
+MenuItemSchema.pre("update", function (next) {
   this.update({}, { $inc: { __v: 1 } }, next);
 });
 
-module.exports = mongoose.model("Food", FoodSchema);
+module.exports = mongoose.model("MenuItem", MenuItemSchema);

@@ -12,8 +12,7 @@ exports.roles = (function () {
     .deleteOwn("address")
     .readAny("restaurant")
     .readAny("menu")
-    .readAny("section")
-    .readAny("food")
+    .readAny("menuItem")
     .createOwn("item")
     .readOwn("item")
     .updateOwn("item")
@@ -23,7 +22,6 @@ exports.roles = (function () {
     .readOwn("cart")
     .deleteOwn("cart")
     .createOwn("payment");
-  
 
   ac.grant("admin")
     .extend("user")
@@ -36,12 +34,9 @@ exports.roles = (function () {
     .createAny("menu")
     .updateAny("menu")
     .deleteAny("menu")
-    .createAny("section")
-    .updateAny("section")
-    .deleteAny("section")
-    .createAny("food")
-    .updateAny("food")
-    .deleteAny("food");
+    .createAny("menuItem")
+    .updateAny("menuItem")
+    .deleteAny("menuItem");
 
   return ac;
 })();
