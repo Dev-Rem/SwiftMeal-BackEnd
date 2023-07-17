@@ -6,6 +6,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
+const cors = require("cors");
 
 const restaurantsRouter = require("./routes/restaurant");
 const addressRouter = require("./routes/address");
@@ -20,8 +21,8 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 const app = express();
-app.listen(3001, () => {
-  console.log("listening on localhost:3001");
+app.listen(4000, () => {
+  console.log("listening on localhost:4000");
 });
 
 mongoose.connect(
@@ -45,6 +46,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cors());
+
+app.use(
+  cors({
+    origin: "http://localhost:3001",
+  })
+);
 
 app.use("/api/restuarants", restaurantsRouter);
 app.use("/api/addresses", addressRouter);

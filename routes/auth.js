@@ -4,14 +4,10 @@ const Address = require("../models/address.js");
 const Cart = require("../models/cart");
 const router = express.Router();
 const { auth, grantAccess } = require("./authController");
-const {
-  registerValidation,
-  loginValidation,
-  addressValidation,
-} = require("../validation");
+const { registerValidation, loginValidation } = require("../validation");
 
 /* Create a new user account */
-router.post("/register", async (req, res) => {
+router.post("/signup", async (req, res) => {
   // validate user account info
   const { error } = registerValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -31,7 +27,7 @@ router.post("/register", async (req, res) => {
 });
 
 /* Login a user */
-router.post("/login", async (req, res) => {
+router.post("/signin", async (req, res) => {
   // validate user login info
   const { error } = loginValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -57,7 +53,7 @@ router.post("/login", async (req, res) => {
 
 /* Logout a user */
 router.post(
-  "/logout",
+  "/signout",
   grantAccess("updateOwn", "profile"),
   auth,
   async (req, res) => {
