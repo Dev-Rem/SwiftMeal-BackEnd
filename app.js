@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const cors = require("cors");
+const helmet = require("helmet");
 
 const restaurantsRouter = require("./routes/restaurant");
 const addressRouter = require("./routes/address");
@@ -47,6 +48,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
+app.use(helmet());
 
 app.use(
   cors({
@@ -56,7 +58,7 @@ app.use(
 
 app.use("/api/restuarants", restaurantsRouter);
 app.use("/api/addresses", addressRouter);
-app.use("/api/auth/", accountRouter);
+app.use("/api/auth", accountRouter);
 app.use("/api/menus", menuRouter);
 app.use("/api/menu-items", foodRouter);
 app.use("/api/items", itemRouter);
