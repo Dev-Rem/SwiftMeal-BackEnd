@@ -45,7 +45,7 @@ router.post("/signin", async (req, res) => {
   // generate user token
   await account.generateToken((error, account) => {
     if (error) return res.status(400).send("Could not generate token");
-    res.header("auth-token", account.token).status(200).json({
+    res.header("Authorization", account.token).status(200).json({
       token: account.token,
     });
   });
@@ -54,18 +54,16 @@ router.post("/signin", async (req, res) => {
 /* Logout a user */
 router.post(
   "/signout",
-  grantAccess("updateOwn", "profile"),
+  // grantAccess("updateOwn", "profile"),
   auth,
   async (req, res) => {
     // get user token from request headers
-    const token = req.header("auth-token");
+    const token = req.header("Authorization");
 
     // find user account and delete token
-    Account.findOne({ token: token }, (error, account) => {
+    Account.findOneAndUpdate({ token: token }, { token: "" }, (error) => {
       if (error) return res.status(400).json({ error: error });
-      account.token = undefined;
-      account.save();
-      res.status(200).send("Logged out");
+      return res.status(200).send("Logged out");
     });
   }
 );
@@ -76,12 +74,38 @@ router.get(
   auth,
   grantAccess("readOwn", "profile"),
   async (req, res) => {
-    console.log(req);
     // get user token from request headers
-    const token = req.header("authorization");
+    const token = req.header("Authorization");
 
     // find account using token and return user infomation
     const account = await Account.findOne({ token: token });
+    if (!account)
+      return res.status(400).json({ error: "Invalid token or user not found" });
+
+    // return user account information
+    res.status(200).json({
+      id: account._id,
+      firstName: account.firstName,
+      lastName: account.lastName,
+      phoneNumber: account.phoneNumber,
+      email: account.email,
+      role: account.role,
+      addressId: account.addressId,
+    });
+  }
+);
+
+/* Get a single user account */
+router.put(
+  "/user",
+  auth,
+  grantAccess("updateOwn", "profile"),
+  async (req, res) => {
+    // get user token from request headers
+    const token = req.header("Authorization");
+
+    // find account using token and return user infomation
+    const account = await Account.findOneAndUpdate({ token: token }, req.body);
     if (!account)
       return res.status(400).json({ error: "Invalid token or user not found" });
 
