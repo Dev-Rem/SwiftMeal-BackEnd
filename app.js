@@ -8,6 +8,7 @@ const bodyParser = require("body-parser");
 const logger = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
+const multer = require("multer");
 
 const restaurantsRouter = require("./routes/restaurant");
 const addressRouter = require("./routes/address");
@@ -50,12 +51,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 app.use(helmet());
 
-app.use(
-  cors({
-    origin: "http://localhost:3001",
-  })
-);
-
 app.use("/api/restuarants", restaurantsRouter);
 app.use("/api/addresses", addressRouter);
 app.use("/api/auth", accountRouter);
@@ -64,6 +59,27 @@ app.use("/api/menu-items", foodRouter);
 app.use("/api/items", itemRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/payment", paymentRouter);
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+const upload = multer({ storage: storage });
+
+app.use(
+  cors({
+    origin: "http://localhost:3001",
+  })
+);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
