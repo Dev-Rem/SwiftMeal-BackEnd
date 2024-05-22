@@ -28,7 +28,7 @@ app.listen(4000, () => {
 });
 
 mongoose.connect(
-  "mongodb://127.0.0.1:27017/swiftmeal-db",
+  "mongodb+srv://aofestus1407:Common1407@swift-meal.ppnkuh5.mongodb.net/?retryWrites=true&w=majority&appName=swift-meal",
   { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true },
   (error) => {
     if (error) return console.error(error);
