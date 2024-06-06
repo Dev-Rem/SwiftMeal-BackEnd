@@ -4,6 +4,24 @@ const router = express.Router();
 const { auth, grantAccess } = require("./authController");
 const { addressValidation } = require("../validation");
 
+/**
+ * @swagger
+ * /api/addresses/:
+ *   get:
+ *     summary: Get all address documents
+ *     tags: [Students]
+ *
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               data: [{}]
+ *       404:
+ *         description: Adress documents not found
+ */
+
 /* GET get all address documents */
 router.get("/", auth, grantAccess("readOwn", "address"), async (req, res) => {
   // Find all address documents
@@ -12,6 +30,28 @@ router.get("/", auth, grantAccess("readOwn", "address"), async (req, res) => {
     res.status(200).json(addresses);
   });
 });
+
+/**
+ * @swagger
+ * /c:
+ *   get:
+ *     summary: Get a list of all students
+ *     tags: [Students]
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               data: [{}]
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *          application/json:
+ *            example:
+ *             error:
+ *              message: "Bad Request"
+ */
 
 /* POST create a new address document */
 router.post(

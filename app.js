@@ -9,6 +9,8 @@ const logger = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
 const multer = require("multer");
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require("swagger-jsdoc");
 
 const restaurantsRouter = require("./routes/restaurant");
 const addressRouter = require("./routes/address");
@@ -47,7 +49,7 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
+// app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 app.use(helmet());
 
@@ -80,6 +82,25 @@ app.use(
     origin: "http://localhost:3001",
   })
 );
+// swagger api documentation
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Swiftmeal APis",
+      version: "1.0.0",
+      description:
+        "Swiftmeal API for online food ordering system.",
+    },
+    servers: [
+      { url: "http://localhost:4000" }, //you can change you server url
+    ],
+  },
+
+  apis: ["./routes/*.js"], //you can change you swagger path
+};
+const specs = swaggerJsdoc(options);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

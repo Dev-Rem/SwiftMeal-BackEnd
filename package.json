@@ -34,6 +34,8 @@
     "nunjucks": "^3.2.2",
     "paypal-rest-sdk": "^1.8.1",
     "stripe": "^8.163.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "validator": "^13.5.2"
   },
   "devDependencies": {
