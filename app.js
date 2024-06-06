@@ -83,14 +83,16 @@ app.use(
   })
 );
 // swagger api documentation
+
+const CSS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
 const options = {
   definition: {
     openapi: "3.0.0",
     info: {
       title: "Swiftmeal APis",
       version: "1.0.0",
-      description:
-        "Swiftmeal API for online food ordering system.",
+      description: "Swiftmeal API for online food ordering system.",
     },
     servers: [
       { url: "http://localhost:4000" }, //you can change you server url
@@ -100,7 +102,11 @@ const options = {
   apis: ["./routes/*.js"], //you can change you swagger path
 };
 const specs = swaggerJsdoc(options);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(specs, { customCssUrl: CSS_URL })
+);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
