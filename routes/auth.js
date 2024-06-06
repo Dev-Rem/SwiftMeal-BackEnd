@@ -188,9 +188,8 @@ router.post("/signup", async (req, res) => {
  *               token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjYxYWY5ZmQ3YzAwYzg2OTRlYTdmNmEiLCJlbWFpbCI6InVzZXJAZW1haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MTc2NzgyMzEsImV4cCI6MTcxNzc2NDYzMX0.xtlzNq6Z1-CkVM4nBkz6cTXqaqQhfDJ9HnIe2EBDOjA"
  *       400:
  *         description: Bad Request
- *        
+ */
 
-/* Login a user */
 router.post("/signin", async (req, res) => {
   // validate user login info
   const { error } = loginValidation(req.body);
